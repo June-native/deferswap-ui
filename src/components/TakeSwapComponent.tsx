@@ -1,11 +1,12 @@
 import { useEffect, useState } from 'react';
-import { useAccount, useReadContract, useWriteContract } from 'wagmi';
+import { useAccount, useReadContract, useWriteContract, useChainId } from 'wagmi';
+import { arbitrumSepolia } from 'viem/chains';
 import { parseUnits, formatUnits } from 'viem';
 import { erc20Abi } from 'viem';
 import { publicClient } from '../lib/viem';
 import { poolAbi } from '../config/abi';
 import { POOL_ADDRESS, QUOTE_TOKEN_DECIMALS, BASE_TOKEN_DECIMALS, BASE_TOKEN_TICKER, QUOTE_TOKEN_TICKER } from '../config/constants';
-import './TakeSwapComponent.css';
+
 
 const useDebounce = (value: string, delay: number) => {
   const [debounced, setDebounced] = useState(value);
@@ -27,6 +28,8 @@ const TakeSwapComponent = ({ onSwapSuccess }: { onSwapSuccess: () => void }) => 
   const [isApproved, setIsApproved] = useState(false);
   const [latestSwap, setLatestSwap] = useState<any>(null);
   const [sendingTx, setSendingTx] = useState(false);
+  const { address: account } = useAccount();
+  const chainId = useChainId();
 
   const { data: quoteToken } = useReadContract({
     address: POOL_ADDRESS,
@@ -35,14 +38,14 @@ const TakeSwapComponent = ({ onSwapSuccess }: { onSwapSuccess: () => void }) => 
   });
 
   const { data: balance } = useReadContract({
-    address: quoteToken,
+    address: quoteToken as `0x${string}`,
     abi: erc20Abi,
     functionName: 'balanceOf',
     args: [address],
   });
 
   const { data: allowance } = useReadContract({
-    address: quoteToken,
+    address: quoteToken as `0x${string}`,
     abi: erc20Abi,
     functionName: 'allowance',
     args: [address, POOL_ADDRESS],
@@ -62,18 +65,26 @@ const TakeSwapComponent = ({ onSwapSuccess }: { onSwapSuccess: () => void }) => 
   const handleApprove = async () => {
     try {
       setSendingTx(true);
+      // const hash = await writeApprove({
+      //   address: quoteToken as `0x${string}`,
+      //   abi: erc20Abi,
+      //   functionName: 'approve',
+      //   args: [POOL_ADDRESS, parseUnits(debouncedQuoteAmount || '0', QUOTE_TOKEN_DECIMALS)],
+      // });
       const hash = await writeApprove({
-        address: quoteToken,
-        abi: erc20Abi,
+        address: quoteToken as `0x${string}`,
+        abi: erc20Abi, // replace with your actual ABI
         functionName: 'approve',
         args: [POOL_ADDRESS, parseUnits(debouncedQuoteAmount || '0', QUOTE_TOKEN_DECIMALS)],
+        account,
+        chain: arbitrumSepolia,
       });
       console.log("Approved: ", hash);
     } catch (err) {
       console.error('Swap transaction failed:', err);
     } finally {
       const updatedAllowance = await publicClient.readContract({
-        address: quoteToken,
+        address: quoteToken as `0x${string}`,
         abi: erc20Abi,
         functionName: 'allowance',
         args: [address, POOL_ADDRESS],
@@ -89,7 +100,8 @@ const TakeSwapComponent = ({ onSwapSuccess }: { onSwapSuccess: () => void }) => 
     abi: poolAbi,
     functionName: 'swapCounter',
   });
-  const swapId = swapCounter ? BigInt(swapCounter) - 1n : 0n;
+  // const swapId = swapCounter ? BigInt(swapCounter) - 1n : 0n;
+  const swapId = swapCounter ? BigInt(swapCounter as string) - 1n : 0n;
 
   const {
     data: swapInfo,
@@ -122,12 +134,14 @@ const TakeSwapComponent = ({ onSwapSuccess }: { onSwapSuccess: () => void }) => 
 
   useEffect(() => {
     if (priceWithSpread) {
-      setExpectedBaseAmount(formatUnits(priceWithSpread, QUOTE_TOKEN_DECIMALS));
+      // setExpectedBaseAmount(formatUnits(priceWithSpread, QUOTE_TOKEN_DECIMALS));
+      setExpectedBaseAmount(formatUnits(priceWithSpread as bigint, QUOTE_TOKEN_DECIMALS));
     }
   }, [priceWithSpread]);
 
+  const spread = priceWithSpread as bigint;
   const minBaseAmount = priceWithSpread && slippage
-    ? priceWithSpread - (priceWithSpread * BigInt(Math.floor(parseFloat(slippage) * 100)) / 10000n)
+    ? spread - (spread * BigInt(Math.floor(parseFloat(slippage) * 100)) / 10000n)
     : 0n;
 
   const handleSwap = async () => {
@@ -137,6 +151,8 @@ const TakeSwapComponent = ({ onSwapSuccess }: { onSwapSuccess: () => void }) => 
         address: POOL_ADDRESS,
         abi: poolAbi,
         functionName: 'takeSwap',
+        chain: arbitrumSepolia,
+        account,
         // TODO: handle slippage
         // args: [parseUnits(debouncedQuoteAmount || '0', QUOTE_TOKEN_DECIMALS), minBaseAmount],
         args: [parseUnits(debouncedQuoteAmount || '0', QUOTE_TOKEN_DECIMALS), 0],
@@ -145,7 +161,7 @@ const TakeSwapComponent = ({ onSwapSuccess }: { onSwapSuccess: () => void }) => 
     } catch (err) {
       console.error('Swap transaction failed:', err);
     } finally {
-      setQuoteAmount(0);
+      setQuoteAmount("0");
       setSendingTx(false);
       onSwapSuccess?.();
     }

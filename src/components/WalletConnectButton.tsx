@@ -1,5 +1,4 @@
 import { useAccount, useConnect, useDisconnect } from 'wagmi';
-import './WalletConnectButton.css';
 
 const WalletConnectButton = () => {
   const { address, isConnected } = useAccount();

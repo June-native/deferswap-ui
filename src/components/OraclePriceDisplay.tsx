@@ -4,7 +4,6 @@ import { formatUnits } from 'viem';
 import { publicClient } from '../lib/viem';
 import { poolAbi } from '../config/abi';
 import { POOL_ADDRESS, BASE_TOKEN_DECIMALS, QUOTE_TOKEN_DECIMALS, BASE_TOKEN_TICKER, QUOTE_TOKEN_TICKER } from '../config/constants';
-import './OraclePriceDisplay.css';
 
 const OraclePriceDisplay = () => {
   const [oraclePrice, setOraclePrice] = useState('');
@@ -13,13 +12,13 @@ const OraclePriceDisplay = () => {
     address: POOL_ADDRESS,
     abi: poolAbi,
     functionName: 'getOraclePrice',
-    watch: false,
+    // watch: false,
   });
 
   useEffect(() => {
     if (rawOraclePrice) {
       console.log(`Oracle price raw: ${rawOraclePrice}`);
-      setOraclePrice(formatUnits(rawOraclePrice, QUOTE_TOKEN_DECIMALS));
+      setOraclePrice(formatUnits(BigInt(rawOraclePrice as string || 0), QUOTE_TOKEN_DECIMALS));
     }
   }, [rawOraclePrice]);
 

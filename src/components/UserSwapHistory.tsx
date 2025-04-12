@@ -3,12 +3,12 @@ import { useAccount, useWriteContract } from 'wagmi';
 import { poolAbi } from '../config/abi';
 import { POOL_ADDRESS, QUOTE_TOKEN_DECIMALS, BASE_TOKEN_DECIMALS, BASE_TOKEN_TICKER, QUOTE_TOKEN_TICKER} from '../config/constants';
 import { publicClient } from '../lib/viem';
+import { arbitrumSepolia } from 'viem/chains';
 import { parseUnits, formatUnits } from 'viem';
-import { moment } from 'moment';
-import './UserSwapHistory.css';
 
 const UserSwapHistory = ({ refreshKey }: { refreshKey: number }) => {
   const { address } = useAccount();
+  const { address: account } = useAccount();
   const { writeContractAsync } = useWriteContract();
   const [userSwaps, setUserSwaps] = useState([]);
   const [swapCount, setSwapCount] = useState<number | null>(null);
@@ -44,7 +44,11 @@ const UserSwapHistory = ({ refreshKey }: { refreshKey: number }) => {
               functionName: 'swaps',
               args: [BigInt(i)],
             });
-            return { id: i, ...swap };
+            if (typeof swap === 'object' && swap !== null) {
+              return { id: i, ...swap };
+            } else {
+              return { id: i }; // fallback or error case
+            }
           } catch (e) {
             console.error(`Error reading swap ${i}`, e);
             return null;
@@ -69,6 +73,8 @@ const UserSwapHistory = ({ refreshKey }: { refreshKey: number }) => {
       const hash = await writeContractAsync({
         address: POOL_ADDRESS,
         abi: poolAbi,
+        chain: arbitrumSepolia,
+        account,
         functionName: 'claimSwap',
         args: [BigInt(swapId)],
       });
