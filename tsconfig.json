@@ -1,0 +1,12 @@
+{
+  "files": [],
+  "references": [
+    { "path": "./tsconfig.app.json" },
+    { "path": "./tsconfig.node.json" }
+  ],
+  "compilerOptions": {
+    "jsx": "react-jsx", // or "react" if using old React runtime
+    "lib": ["dom", "esnext"],
+    "types": ["react", "react-dom"]
+  }
+}

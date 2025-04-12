@@ -1,0 +1,35 @@
+.swap-container {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  padding: 1rem;
+  border-radius: 10px;
+  box-shadow: 0 0 10px rgba(0,0,0,0.1);
+  background: #fff;
+}
+
+.swap-input {
+  padding: 0.5rem;
+  font-size: 1rem;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+}
+
+.swap-button {
+  padding: 0.5rem 1rem;
+  font-size: 1rem;
+  background-color: #222;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  min-width: 120px;
+}
+
+.swap-button:hover {
+  background-color: #555;
+}
+
+.swap-button:disabled {
+  background-color: #BBB;
+}
