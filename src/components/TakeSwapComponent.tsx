@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { useAccount, useReadContract, useWriteContract, useChainId } from 'wagmi';
-import { arbitrumSepolia } from 'viem/chains';
+import { bsc as chain } from 'viem/chains';
 import { parseUnits, formatUnits } from 'viem';
 import { erc20Abi } from 'viem';
 import { publicClient } from '../lib/viem';
@@ -84,7 +84,7 @@ const TakeSwapComponent = ({ onSwapSuccess }: { onSwapSuccess: () => void }) => 
         functionName: 'approve',
         args: [POOL_ADDRESS, parseUnits(debouncedQuoteAmount || '0', QUOTE_TOKEN_DECIMALS)],
         account,
-        chain: arbitrumSepolia,
+        chain: chain,
       });
       console.log("Approved: ", hash);
     } catch (err) {
@@ -172,7 +172,7 @@ const TakeSwapComponent = ({ onSwapSuccess }: { onSwapSuccess: () => void }) => 
         address: POOL_ADDRESS,
         abi: poolAbi,
         functionName: 'takeSwap',
-        chain: arbitrumSepolia,
+        chain: chain,
         account,
         // TODO: handle slippage
         // args: [parseUnits(debouncedQuoteAmount || '0', QUOTE_TOKEN_DECIMALS), minBaseAmount],

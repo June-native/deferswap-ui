@@ -3,7 +3,7 @@ import { useAccount, useWriteContract } from 'wagmi';
 import { poolAbi } from '../config/abi';
 import { POOL_ADDRESS, QUOTE_TOKEN_DECIMALS, BASE_TOKEN_DECIMALS, BASE_TOKEN_TICKER, QUOTE_TOKEN_TICKER} from '../config/constants';
 import { publicClient } from '../lib/viem';
-import { arbitrumSepolia } from 'viem/chains';
+import { bsc as chain } from 'viem/chains';
 import { parseUnits, formatUnits } from 'viem';
 
 const UserSwapHistory = ({ refreshKey }: { refreshKey: number }) => {
@@ -73,7 +73,7 @@ const UserSwapHistory = ({ refreshKey }: { refreshKey: number }) => {
       const hash = await writeContractAsync({
         address: POOL_ADDRESS,
         abi: poolAbi,
-        chain: arbitrumSepolia,
+        chain: chain,
         account,
         functionName: 'claimSwap',
         args: [BigInt(swapId)],

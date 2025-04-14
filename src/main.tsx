@@ -3,13 +3,13 @@ import ReactDOM from 'react-dom/client';
 import App from './App';
 
 import { WagmiConfig, createConfig, http } from 'wagmi';
-import { arbitrumSepolia } from 'wagmi/chains';
+import { bsc } from 'wagmi/chains';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 
 const config = createConfig({
-  chains: [arbitrumSepolia],
+  chains: [bsc],
   transports: {
-    [arbitrumSepolia.id]: http('https://sepolia-rollup.arbitrum.io/rpc'),
+    [bsc.id]: http('https://binance.llamarpc.com'),
   },
   ssr: false,
 });

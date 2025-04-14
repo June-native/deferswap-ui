@@ -1,7 +1,7 @@
 import { createPublicClient, http } from 'viem';
-import { mainnet, arbitrumSepolia } from 'wagmi/chains';
+import { mainnet, bsc as chain } from 'wagmi/chains';
 
 export const publicClient = createPublicClient({
-  chain: arbitrumSepolia,
+  chain: chain,
   transport: http()
 });
