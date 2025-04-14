@@ -4,6 +4,7 @@ import OraclePriceDisplay from '../components/OraclePriceDisplay';
 import UserSwapHistory from '../components/UserSwapHistory';
 import WalletConnectButton from '../components/WalletConnectButton';
 import { useState } from 'react';
+import { BASE_TOKEN_TICKER, QUOTE_TOKEN_TICKER} from '../config/constants';
 
 
 const SwapDashboardPage = () => {
@@ -14,7 +15,7 @@ const SwapDashboardPage = () => {
 
   return (
     <div style={{ maxWidth: '800px', margin: '0 auto', padding: '2rem' }}>
-      <h1 style={{ fontWeight: 'bold', marginBottom: '1rem' }}>🐳 DeferSwap PoC</h1>
+      <h1 style={{ fontWeight: 'bold', marginBottom: '1rem' }}>🐳 💙 DeferSwap (ArbSep {BASE_TOKEN_TICKER}/{QUOTE_TOKEN_TICKER})</h1>
       <WalletConnectButton />
 
       <OraclePriceDisplay />
