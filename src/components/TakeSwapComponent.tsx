@@ -27,6 +27,7 @@ const TakeSwapComponent = ({ onSwapSuccess }: { onSwapSuccess: () => void }) => 
   const [slippage, setSlippage] = useState('1');
   const [isApproved, setIsApproved] = useState(false);
   const [latestSwap, setLatestSwap] = useState<any>(null);
+  const [minQuoteSize, setMinQuoteSize] = useState<any>(0n);
   const [sendingTx, setSendingTx] = useState(false);
   const { address: account } = useAccount();
   const chainId = useChainId();
@@ -51,26 +52,32 @@ const TakeSwapComponent = ({ onSwapSuccess }: { onSwapSuccess: () => void }) => 
     args: [address, POOL_ADDRESS],
   });
 
-  const { writeContractAsync: writeApprove } = useWriteContract();
-  const { writeContractAsync: writeSwap } = useWriteContract();
+  const { data: collateralRate } = useReadContract({
+    address: POOL_ADDRESS,
+    abi: poolAbi,
+    functionName: 'penaltyRate',
+  });
+
+  const { data: settlementPeriod } = useReadContract({
+    address: POOL_ADDRESS,
+    abi: poolAbi,
+    functionName: 'settlementPeriod',
+  });
 
   useEffect(() => {
-    if (allowance && debouncedQuoteAmount) {
+    if (debouncedQuoteAmount) {
       const required = parseUnits(debouncedQuoteAmount || '0', QUOTE_TOKEN_DECIMALS);
-      console.log(`Required: ${required}, Allowance: ${BigInt(allowance)}`)
-      setIsApproved(BigInt(allowance) >= required);
+      console.log(`Required: ${required}, Allowance: ${BigInt(allowance)}, Approved: ${(allowance ? BigInt(allowance) : BigInt(0)) >= required}`)
+      setIsApproved((allowance ? BigInt(allowance) : BigInt(0)) >= required);
     }
   }, [allowance, debouncedQuoteAmount]);
+
+  const { writeContractAsync: writeApprove } = useWriteContract();
+  const { writeContractAsync: writeSwap } = useWriteContract();
 
   const handleApprove = async () => {
     try {
       setSendingTx(true);
-      // const hash = await writeApprove({
-      //   address: quoteToken as `0x${string}`,
-      //   abi: erc20Abi,
-      //   functionName: 'approve',
-      //   args: [POOL_ADDRESS, parseUnits(debouncedQuoteAmount || '0', QUOTE_TOKEN_DECIMALS)],
-      // });
       const hash = await writeApprove({
         address: quoteToken as `0x${string}`,
         abi: erc20Abi, // replace with your actual ABI
@@ -112,9 +119,23 @@ const TakeSwapComponent = ({ onSwapSuccess }: { onSwapSuccess: () => void }) => 
     functionName: 'swaps',
     args: [swapId],
   });
+
   useEffect(() => {
     if (swapInfo) setLatestSwap(swapInfo);
   }, [swapInfo]);
+
+  const {
+    data: minQuoteSizeInfo,
+    refetch: refetchMinQuoteSize,
+  } = useReadContract({
+    address: POOL_ADDRESS,
+    abi: poolAbi,
+    functionName: 'minQuoteSize',
+  });
+
+  useEffect(() => {
+    if (minQuoteSizeInfo) setMinQuoteSize(minQuoteSizeInfo);
+  }, [minQuoteSizeInfo]);
 
   const {
     data: priceWithSpread,
@@ -169,6 +190,7 @@ const TakeSwapComponent = ({ onSwapSuccess }: { onSwapSuccess: () => void }) => 
 
   const quoteAmountParsed = parseUnits(debouncedQuoteAmount || '0', QUOTE_TOKEN_DECIMALS);
   const exceedsMaxQuote = latestSwap && Number(quoteAmountParsed) > (latestSwap ? Number(latestSwap[3]) : Number(0n));
+  const lowerThanMinQuote = minQuoteSize &&  Number(quoteAmountParsed) < Number(minQuoteSize);
 
   const isTaken = latestSwap && latestSwap[5];
 
@@ -191,6 +213,11 @@ const TakeSwapComponent = ({ onSwapSuccess }: { onSwapSuccess: () => void }) => 
   if (isTaken) {
     isSwapOkay.status = false;
     isSwapOkay.reason = "Latest Quote is Already Taken";
+  }
+
+  if (lowerThanMinQuote) {
+    isSwapOkay.status = false;
+    isSwapOkay.reason = "Swap Amount Lower Than Min Quote";
   }
 
   if (exceedsMaxQuote) {
@@ -219,7 +246,7 @@ const TakeSwapComponent = ({ onSwapSuccess }: { onSwapSuccess: () => void }) => 
       <input
         type="number"
         value={
-          !exceedsMaxQuote ? Number(expectedBaseAmount) * Number(quoteAmount) : 0
+          !exceedsMaxQuote && !lowerThanMinQuote ? Number(expectedBaseAmount) * Number(quoteAmount) : 0
         }
         placeholder="0"
         disabled
@@ -237,7 +264,9 @@ const TakeSwapComponent = ({ onSwapSuccess }: { onSwapSuccess: () => void }) => 
       />
       <div><b>Price:</b> {!exceedsMaxQuote ? expectedBaseAmount : 0} {BASE_TOKEN_TICKER} per {QUOTE_TOKEN_TICKER}</div>
       <div><b>Wallet Balance:</b> {balance ? formatUnits(balance, QUOTE_TOKEN_DECIMALS) : 0} {QUOTE_TOKEN_TICKER}</div>
-      <div><b>Max Quote Size:</b> {latestSwap ? formatUnits(latestSwap[3], QUOTE_TOKEN_DECIMALS) : 0} {QUOTE_TOKEN_TICKER}</div>
+      <div><b>Min/Max Quote Size:</b> {minQuoteSize ? formatUnits(minQuoteSize, QUOTE_TOKEN_DECIMALS) : 0}/{latestSwap ? formatUnits(latestSwap[3], QUOTE_TOKEN_DECIMALS) : 0} {QUOTE_TOKEN_TICKER}</div>
+      <div><b>Settlement Period:</b> {settlementPeriod ? Number(settlementPeriod) / 60 : ''} mins</div>
+      <div><b>Collateral</b> {collateralRate && debouncedQuoteAmount && !exceedsMaxQuote && !lowerThanMinQuote ? (Number(collateralRate) / 10000 * Number(expectedBaseAmount) * Number(quoteAmount)).toFixed(2) : 0} {BASE_TOKEN_TICKER} ({ collateralRate ? Number(collateralRate) / 100 : 0 }%)</div>
       {!isApproved ? (
         <button onClick={handleApprove} disabled={!isSwapOkay.status} className="swap-button">
           {isSwapOkay.status ? 'Approve' : isSwapOkay.reason}
