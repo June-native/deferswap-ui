@@ -105,6 +105,26 @@ const UserSwapHistory = ({
   const totalPages = Math.ceil(userSwaps.length / itemsPerPage);
   const displayedSwaps = userSwaps.slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage);
 
+  const [now, setNow] = useState(Date.now());
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setNow(Date.now());
+    }, 1000);
+    return () => clearInterval(interval);
+  }, []);
+
+  const formatCountdown = (expiryMs: number) => {
+    const remaining = Math.max(0, Math.floor((expiryMs - now) / 1000));
+
+    const hrs = Math.floor(remaining / 3600);
+    const mins = Math.floor((remaining % 3600) / 60);
+    const secs = remaining % 60;
+
+    return `${hrs.toString().padStart(2, '0')}:${mins
+      .toString()
+      .padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
+  };
+
   return (
     <div className="history-container">
       <div className="flex justify-between items-center mb-2">
@@ -150,7 +170,13 @@ const UserSwapHistory = ({
                     <td>{Number(formatUnits(s[1], quoteTokenMeta.decimals)).toFixed(2)}</td>
                     <td>{Number(formatUnits(s[2], baseTokenMeta.decimals)).toFixed(2)}</td>
                     <td>{Number(formatUnits(s[4], baseTokenMeta.decimals)).toFixed(2)}</td>
-                    <td>{new Date(expiryMs).toLocaleString()}</td>
+                    <td>
+                      {new Date(expiryMs).toLocaleString()}
+                      <br />
+                      <span style={{ fontSize: '0.85em', color: '#888' }}>
+                        in {formatCountdown(expiryMs)}
+                      </span>
+                    </td>
                     <td>{status}</td>
                     <td>
                       <button
