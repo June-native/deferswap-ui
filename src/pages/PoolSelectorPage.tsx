@@ -9,8 +9,9 @@ const PoolSelectorPage = () => {
 
   return (
     <div style={{ maxWidth: '400px', margin: '0 auto', padding: '2rem' }}>
-      <h1 style={{ fontWeight: 'bold', marginBottom: '1rem' }}>Select a Pool to Trade</h1>
+      <h1 style={{ fontWeight: 'bold', marginBottom: '1rem' }}>🐳 🔸 DeferSwap</h1>
       <div className="swap-container">
+        <h2 className="oracle-title">Select a Pool to Trade</h2>
         <select
           value={selected}
           onChange={(e) => setSelected(e.target.value)}
@@ -27,7 +28,7 @@ const PoolSelectorPage = () => {
           onClick={() => navigate(`/swap?pool=${selected}`)}
           className="swap-button"
         >
-          Enter Pool
+          Trade
         </button>
       </div>
     </div>
