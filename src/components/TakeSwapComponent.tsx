@@ -240,6 +240,11 @@ const TakeSwapComponent = ({
     isSwapOkay.reason = "Pending Tx Confirm...";
   }
 
+  if (!address) {
+    isSwapOkay.status = false;
+    isSwapOkay.reason = "Connect Wallet to Swap";
+  }
+
   return (
     <div className="swap-container">
       <h2 className="oracle-title">Swap</h2>
@@ -251,6 +256,7 @@ const TakeSwapComponent = ({
         placeholder="Enter amount to swap"
         max={balance ? formatUnits(balance, quoteTokenMeta.decimals) : ''}
         className="swap-input"
+        disabled={!address}
       />
       <b>Output ({baseTokenMeta.symbol}):</b>
       <input
@@ -271,6 +277,7 @@ const TakeSwapComponent = ({
         step="0.1"
         min="0"
         className="swap-input"
+        disabled={!address}
       />
       <div><b>Price:</b> {!exceedsMaxQuote ? expectedBaseAmount : 0} {baseTokenMeta.symbol} per {quoteTokenMeta.symbol}</div>
       <div><b>Wallet Balance:</b> {balance ? formatUnits(balance, quoteTokenMeta.decimals) : 0} {quoteTokenMeta.symbol}</div>
