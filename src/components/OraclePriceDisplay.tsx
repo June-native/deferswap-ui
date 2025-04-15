@@ -39,7 +39,7 @@ const OraclePriceDisplay = ({
   return (
     <div className="oracle-container">
       <h2 className="oracle-title">Oracle Price</h2>
-      <div>{oraclePrice ? `${oraclePrice} ${baseTokenMeta.decimals} per ${quoteTokenMeta.symbol}` : 'Loading...'}</div>
+      <div>{oraclePrice ? `${oraclePrice} ${baseTokenMeta.symbol} per ${quoteTokenMeta.symbol}` : 'Loading...'}</div>
     </div>
   );
 };
