@@ -64,11 +64,9 @@ const SwapDashboardPage = () => {
 
   if (!ready || !poolAddress) {
     return (
-      <div className="flex items-center justify-center h-screen text-lg text-gray-600">
-        <div className="flex flex-col items-center gap-2">
-          <div className="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-blue-500" />
-          <span>Loading pool information...</span>
-        </div>
+      <div style={{ maxWidth: '800px', margin: '0 auto', padding: '2rem' }}>
+          <p className="animate-spin loader">↻</p> 
+          <h2 style={{ fontWeight: 'bold', marginBottom: '1rem', textAlign: 'center'}}>Loading Pool Information...</h2>
       </div>
     );
   }

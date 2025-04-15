@@ -88,5 +88,13 @@ td {
 }
 
 .animate-spin {
-  animation: spin 1s linear infinite;
+  animation: spin 5s linear infinite;
+}
+
+.loader {
+  font-size: 40px;
+  padding: 0;
+  margin: auto;
+  text-align: center;
+  vertical-align: middle;
 }
