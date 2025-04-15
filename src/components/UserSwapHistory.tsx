@@ -1,12 +1,21 @@
 import { useEffect, useState } from 'react';
 import { useAccount, useWriteContract } from 'wagmi';
 import { poolAbi } from '../config/abi';
-import { POOL_ADDRESS, QUOTE_TOKEN_DECIMALS, BASE_TOKEN_DECIMALS, BASE_TOKEN_TICKER, QUOTE_TOKEN_TICKER} from '../config/constants';
 import { publicClient } from '../lib/viem';
 import { bsc as chain } from 'viem/chains';
 import { parseUnits, formatUnits } from 'viem';
 
-const UserSwapHistory = ({ refreshKey }: { refreshKey: number }) => {
+const UserSwapHistory = ({
+  poolAddress,
+  baseTokenMeta,
+  quoteTokenMeta,
+  refreshKey, 
+}: {
+  poolAddress: string;
+  baseTokenMeta: { symbol: string; decimals: number };
+  quoteTokenMeta: { symbol: string; decimals: number };
+  refreshKey: number;
+}) => {
   const { address } = useAccount();
   const { address: account } = useAccount();
   const { writeContractAsync } = useWriteContract();
@@ -23,7 +32,7 @@ const UserSwapHistory = ({ refreshKey }: { refreshKey: number }) => {
     try {
       setRefreshing(true);
       const count = await publicClient.readContract({
-        address: POOL_ADDRESS,
+        address: poolAddress as `0x${string}`,
         abi: poolAbi,
         functionName: 'swapCounter',
       });
@@ -39,7 +48,7 @@ const UserSwapHistory = ({ refreshKey }: { refreshKey: number }) => {
         Array.from({ length: countNum }, async (_, i) => {
           try {
             const swap = await publicClient.readContract({
-              address: POOL_ADDRESS,
+              address: poolAddress as `0x${string}`,
               abi: poolAbi,
               functionName: 'swaps',
               args: [BigInt(i)],
@@ -71,7 +80,7 @@ const UserSwapHistory = ({ refreshKey }: { refreshKey: number }) => {
     try {
       setClaimingSwapId(swapId);
       const hash = await writeContractAsync({
-        address: POOL_ADDRESS,
+        address: poolAddress as `0x${string}`,
         abi: poolAbi,
         chain: chain,
         account,
@@ -111,8 +120,8 @@ const UserSwapHistory = ({ refreshKey }: { refreshKey: number }) => {
             <thead>
               <tr>
                 <th>ID</th>
-                <th>{QUOTE_TOKEN_TICKER}</th>
-                <th>{BASE_TOKEN_TICKER}</th>
+                <th>{quoteTokenMeta.symbol}</th>
+                <th>{baseTokenMeta.symbol}</th>
                 <th>Collateral</th>
                 <th>Expiry</th>
                 <th>Status</th>
@@ -138,9 +147,9 @@ const UserSwapHistory = ({ refreshKey }: { refreshKey: number }) => {
                 return (
                   <tr key={s.id} className="history-row">
                     <td>{s.id}</td>
-                    <td>{Number(formatUnits(s[1], QUOTE_TOKEN_DECIMALS)).toFixed(2)}</td>
-                    <td>{Number(formatUnits(s[2], BASE_TOKEN_DECIMALS)).toFixed(2)}</td>
-                    <td>{Number(formatUnits(s[4], BASE_TOKEN_DECIMALS)).toFixed(2)}</td>
+                    <td>{Number(formatUnits(s[1], quoteTokenMeta.decimals)).toFixed(2)}</td>
+                    <td>{Number(formatUnits(s[2], baseTokenMeta.decimals)).toFixed(2)}</td>
+                    <td>{Number(formatUnits(s[4], baseTokenMeta.decimals)).toFixed(2)}</td>
                     <td>{new Date(expiryMs).toLocaleString()}</td>
                     <td>{status}</td>
                     <td>

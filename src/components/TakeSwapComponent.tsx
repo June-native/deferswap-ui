@@ -5,8 +5,6 @@ import { parseUnits, formatUnits } from 'viem';
 import { erc20Abi } from 'viem';
 import { publicClient } from '../lib/viem';
 import { poolAbi } from '../config/abi';
-import { POOL_ADDRESS, QUOTE_TOKEN_DECIMALS, BASE_TOKEN_DECIMALS, BASE_TOKEN_TICKER, QUOTE_TOKEN_TICKER } from '../config/constants';
-
 
 const useDebounce = (value: string, delay: number) => {
   const [debounced, setDebounced] = useState(value);
@@ -19,7 +17,19 @@ const useDebounce = (value: string, delay: number) => {
   return debounced;
 };
 
-const TakeSwapComponent = ({ onSwapSuccess }: { onSwapSuccess: () => void }) => {
+const TakeSwapComponent = ({
+  poolAddress,
+  baseTokenMeta,
+  quoteTokenMeta,
+  onSwapSuccess,
+}: {
+  poolAddress: string;
+  baseTokenMeta: { symbol: string; decimals: number };
+  quoteTokenMeta: { symbol: string; decimals: number };
+  onSwapSuccess: () => void;
+}) => {
+  console.log(baseTokenMeta, quoteTokenMeta);
+
   const { address } = useAccount();
   const [quoteAmount, setQuoteAmount] = useState('');
   const debouncedQuoteAmount = useDebounce(quoteAmount, 1000);
@@ -33,7 +43,7 @@ const TakeSwapComponent = ({ onSwapSuccess }: { onSwapSuccess: () => void }) => 
   const chainId = useChainId();
 
   const { data: quoteToken } = useReadContract({
-    address: POOL_ADDRESS,
+    address: poolAddress as `0x${string}`,
     abi: poolAbi,
     functionName: 'quoteToken',
   });
@@ -49,24 +59,24 @@ const TakeSwapComponent = ({ onSwapSuccess }: { onSwapSuccess: () => void }) => 
     address: quoteToken as `0x${string}`,
     abi: erc20Abi,
     functionName: 'allowance',
-    args: [address, POOL_ADDRESS],
+    args: [address, poolAddress as `0x${string}`],
   });
 
   const { data: collateralRate } = useReadContract({
-    address: POOL_ADDRESS,
+    address: poolAddress as `0x${string}`,
     abi: poolAbi,
     functionName: 'penaltyRate',
   });
 
   const { data: settlementPeriod } = useReadContract({
-    address: POOL_ADDRESS,
+    address: poolAddress as `0x${string}`,
     abi: poolAbi,
     functionName: 'settlementPeriod',
   });
 
   useEffect(() => {
     if (debouncedQuoteAmount) {
-      const required = parseUnits(debouncedQuoteAmount || '0', QUOTE_TOKEN_DECIMALS);
+      const required = parseUnits(debouncedQuoteAmount || '0', quoteTokenMeta.decimals);
       console.log(`Required: ${required}, Allowance: ${BigInt(allowance)}, Approved: ${(allowance ? BigInt(allowance) : BigInt(0)) >= required}`)
       setIsApproved((allowance ? BigInt(allowance) : BigInt(0)) >= required);
     }
@@ -82,7 +92,7 @@ const TakeSwapComponent = ({ onSwapSuccess }: { onSwapSuccess: () => void }) => 
         address: quoteToken as `0x${string}`,
         abi: erc20Abi, // replace with your actual ABI
         functionName: 'approve',
-        args: [POOL_ADDRESS, parseUnits(debouncedQuoteAmount || '0', QUOTE_TOKEN_DECIMALS)],
+        args: [poolAddress as `0x${string}`, parseUnits(debouncedQuoteAmount || '0', quoteTokenMeta.decimals)],
         account,
         chain: chain,
       });
@@ -94,16 +104,16 @@ const TakeSwapComponent = ({ onSwapSuccess }: { onSwapSuccess: () => void }) => 
         address: quoteToken as `0x${string}`,
         abi: erc20Abi,
         functionName: 'allowance',
-        args: [address, POOL_ADDRESS],
+        args: [address, poolAddress as `0x${string}`],
       });
-      const required = parseUnits(debouncedQuoteAmount || '0', QUOTE_TOKEN_DECIMALS);
+      const required = parseUnits(debouncedQuoteAmount || '0', quoteTokenMeta.decimals);
       setIsApproved(BigInt(updatedAllowance) >= required);
       setSendingTx(false);
     }
   };
 
   const { data: swapCounter } = useReadContract({
-    address: POOL_ADDRESS,
+    address: poolAddress as `0x${string}`,
     abi: poolAbi,
     functionName: 'swapCounter',
   });
@@ -114,7 +124,7 @@ const TakeSwapComponent = ({ onSwapSuccess }: { onSwapSuccess: () => void }) => 
     data: swapInfo,
     refetch: refetchSwapInfo,
   } = useReadContract({
-    address: POOL_ADDRESS,
+    address: poolAddress as `0x${string}`,
     abi: poolAbi,
     functionName: 'swaps',
     args: [swapId],
@@ -128,7 +138,7 @@ const TakeSwapComponent = ({ onSwapSuccess }: { onSwapSuccess: () => void }) => 
     data: minQuoteSizeInfo,
     refetch: refetchMinQuoteSize,
   } = useReadContract({
-    address: POOL_ADDRESS,
+    address: poolAddress as `0x${string}`,
     abi: poolAbi,
     functionName: 'minQuoteSize',
   });
@@ -141,10 +151,10 @@ const TakeSwapComponent = ({ onSwapSuccess }: { onSwapSuccess: () => void }) => 
     data: priceWithSpread,
     refetch: refetchPrice,
   } = useReadContract({
-    address: POOL_ADDRESS,
+    address: poolAddress as `0x${string}`,
     abi: poolAbi,
     functionName: 'getEffectivePriceWithSpread',
-    args: [swapId, parseUnits(debouncedQuoteAmount || '0', QUOTE_TOKEN_DECIMALS)],
+    args: [swapId, parseUnits(debouncedQuoteAmount || '0', quoteTokenMeta.decimals)],
   });
 
   useEffect(() => {
@@ -155,8 +165,8 @@ const TakeSwapComponent = ({ onSwapSuccess }: { onSwapSuccess: () => void }) => 
 
   useEffect(() => {
     if (priceWithSpread) {
-      // setExpectedBaseAmount(formatUnits(priceWithSpread, QUOTE_TOKEN_DECIMALS));
-      setExpectedBaseAmount(formatUnits(priceWithSpread as bigint, QUOTE_TOKEN_DECIMALS));
+      // setExpectedBaseAmount(formatUnits(priceWithSpread, quoteTokenMeta.decimals));
+      setExpectedBaseAmount(formatUnits(priceWithSpread as bigint, quoteTokenMeta.decimals));
     }
   }, [priceWithSpread]);
 
@@ -169,16 +179,16 @@ const TakeSwapComponent = ({ onSwapSuccess }: { onSwapSuccess: () => void }) => 
     try {
       setSendingTx(true);
       const hash = await writeSwap({
-        address: POOL_ADDRESS,
+        address: poolAddress as `0x${string}`,
         abi: poolAbi,
         functionName: 'takeSwap',
         chain: chain,
         account,
         // TODO: handle slippage
-        // args: [parseUnits(debouncedQuoteAmount || '0', QUOTE_TOKEN_DECIMALS), minBaseAmount],
-        args: [parseUnits(debouncedQuoteAmount || '0', QUOTE_TOKEN_DECIMALS), 0],
+        // args: [parseUnits(debouncedQuoteAmount || '0', quoteTokenMeta.decimals), minBaseAmount],
+        args: [parseUnits(debouncedQuoteAmount || '0', quoteTokenMeta.decimals), 0],
       });
-      console.log("Swapped: ", parseUnits(debouncedQuoteAmount || '0', QUOTE_TOKEN_DECIMALS), hash);
+      console.log("Swapped: ", parseUnits(debouncedQuoteAmount || '0', quoteTokenMeta.decimals), hash);
     } catch (err) {
       console.error('Swap transaction failed:', err);
     } finally {
@@ -188,7 +198,7 @@ const TakeSwapComponent = ({ onSwapSuccess }: { onSwapSuccess: () => void }) => 
     }
   };
 
-  const quoteAmountParsed = parseUnits(debouncedQuoteAmount || '0', QUOTE_TOKEN_DECIMALS);
+  const quoteAmountParsed = parseUnits(debouncedQuoteAmount || '0', quoteTokenMeta.decimals);
   const exceedsMaxQuote = latestSwap && Number(quoteAmountParsed) > (latestSwap ? Number(latestSwap[3]) : Number(0n));
   const lowerThanMinQuote = minQuoteSize &&  Number(quoteAmountParsed) < Number(minQuoteSize);
 
@@ -233,16 +243,16 @@ const TakeSwapComponent = ({ onSwapSuccess }: { onSwapSuccess: () => void }) => 
   return (
     <div className="swap-container">
       <h2 className="oracle-title">Swap</h2>
-      <b> Input ({QUOTE_TOKEN_TICKER}):</b>
+      <b> Input ({quoteTokenMeta.symbol}):</b>
       <input
         type="number"
         value={quoteAmount}
         onChange={(e) => setQuoteAmount(e.target.value)}
         placeholder="Enter amount to swap"
-        max={balance ? formatUnits(balance, QUOTE_TOKEN_DECIMALS) : ''}
+        max={balance ? formatUnits(balance, quoteTokenMeta.decimals) : ''}
         className="swap-input"
       />
-      <b>Output ({BASE_TOKEN_TICKER}):</b>
+      <b>Output ({baseTokenMeta.symbol}):</b>
       <input
         type="number"
         value={
@@ -262,11 +272,11 @@ const TakeSwapComponent = ({ onSwapSuccess }: { onSwapSuccess: () => void }) => 
         min="0"
         className="swap-input"
       />
-      <div><b>Price:</b> {!exceedsMaxQuote ? expectedBaseAmount : 0} {BASE_TOKEN_TICKER} per {QUOTE_TOKEN_TICKER}</div>
-      <div><b>Wallet Balance:</b> {balance ? formatUnits(balance, QUOTE_TOKEN_DECIMALS) : 0} {QUOTE_TOKEN_TICKER}</div>
-      <div><b>Min/Max Quote Size:</b> {minQuoteSize ? formatUnits(minQuoteSize, QUOTE_TOKEN_DECIMALS) : 0}/{latestSwap ? formatUnits(latestSwap[3], QUOTE_TOKEN_DECIMALS) : 0} {QUOTE_TOKEN_TICKER}</div>
-      <div><b>Settlement Period:</b> {settlementPeriod ? Number(settlementPeriod) / 60 : ''} mins</div>
-      <div><b>Collateral</b> {collateralRate && debouncedQuoteAmount && !exceedsMaxQuote && !lowerThanMinQuote ? (Number(collateralRate) / 10000 * Number(expectedBaseAmount) * Number(quoteAmount)).toFixed(2) : 0} {BASE_TOKEN_TICKER} ({ collateralRate ? Number(collateralRate) / 100 : 0 }%)</div>
+      <div><b>Price:</b> {!exceedsMaxQuote ? expectedBaseAmount : 0} {baseTokenMeta.symbol} per {quoteTokenMeta.symbol}</div>
+      <div><b>Wallet Balance:</b> {balance ? formatUnits(balance, quoteTokenMeta.decimals) : 0} {quoteTokenMeta.symbol}</div>
+      <div><b>Min/Max Quote Size:</b> {minQuoteSize ? formatUnits(minQuoteSize, quoteTokenMeta.decimals) : 0}/{latestSwap ? formatUnits(latestSwap[3], quoteTokenMeta.decimals) : 0} {quoteTokenMeta.symbol}</div>
+      <div><b>Settlement Period:</b> {settlementPeriod ? Number(settlementPeriod) / 60 / 60 : ''} hours</div>
+      <div><b>Collateral</b> {collateralRate && debouncedQuoteAmount && !exceedsMaxQuote && !lowerThanMinQuote ? (Number(collateralRate) / 10000 * Number(expectedBaseAmount) * Number(quoteAmount)).toFixed(2) : 0} {baseTokenMeta.symbol} ({ collateralRate ? Number(collateralRate) / 100 : 0 }%)</div>
       {!isApproved ? (
         <button onClick={handleApprove} disabled={!isSwapOkay.status} className="swap-button">
           {isSwapOkay.status ? 'Approve' : isSwapOkay.reason}
