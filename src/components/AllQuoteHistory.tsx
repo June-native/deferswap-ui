@@ -153,14 +153,22 @@ const AllQuoteHistory = ({
                 return (
                   <tr key={s.id} className="history-row">
                     <td>{s.id}</td>
-                    <td>{Number(formatUnits(s[1], quoteTokenMeta.decimals)).toFixed(6)}</td>
-                    <td>{Number(formatUnits(s[2], baseTokenMeta.decimals)).toFixed(6)}</td>
-                    <td>{Number(formatUnits(s[4], baseTokenMeta.decimals)).toFixed(6)}</td>
+                    <td>{
+                      isTaken 
+                        ? Number(formatUnits(s[1], quoteTokenMeta.decimals)).toFixed(3)
+                        : <><span>{Number(formatUnits(s[3], quoteTokenMeta.decimals)).toFixed(3)}</span><br/><span style={{ fontSize: '0.85em', color: '#888' }}>MAX</span></>
+                    }</td>
+                    <td>{Number(formatUnits(s[2], baseTokenMeta.decimals)).toFixed(3)}</td>
+                    <td>{
+                      isTaken
+                        ? Number(formatUnits(s[4], baseTokenMeta.decimals)).toFixed(3)
+                        : <><span>{Number(formatUnits(s[4], baseTokenMeta.decimals)).toFixed(3)}</span><br/><span style={{ fontSize: '0.85em', color: '#888' }}>MAX</span></>
+                    }</td>
                     <td>
                       {expiryMs > 0 ? new Date(expiryMs).toLocaleString() : '-'}
                       <br />
                       <span style={{ fontSize: '0.85em', color: '#888' }}>
-                        in {formatCountdown(expiryMs)}
+                        in {!isClaimed && !isCancelled ? formatCountdown(expiryMs) : '00:00:00'}
                       </span>
                     </td>
                     <td>{status}</td>

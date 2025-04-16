@@ -174,7 +174,7 @@ const UserSwapHistory = ({
                       {new Date(expiryMs).toLocaleString()}
                       <br />
                       <span style={{ fontSize: '0.85em', color: '#888' }}>
-                        in {formatCountdown(expiryMs)}
+                          in {!isClaimed && !isCancelled ? formatCountdown(expiryMs) : '00:00:00'}
                       </span>
                     </td>
                     <td>{status}</td>
