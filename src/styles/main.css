@@ -1,5 +1,5 @@
-.oracle-container {
-  padding: 2rem;
+.main-container {
+  padding: 1.5rem;
   border-radius: 10px;
   box-shadow: 0 0 10px rgba(0,0,0,0.1);
   background: #fff;
@@ -7,7 +7,7 @@
   margin: 0 auto;
 }
 
-.oracle-title {
+.main-title {
   margin-bottom: 2rem;
   text-align: center;
 }
@@ -293,4 +293,14 @@ td {
   min-width: 200px;
   color: #666;
   font-size: 0.9rem;
+}
+
+.warning-message {
+  color: #666;
+  text-align: center;
+  padding: 8px;
+  font-size: 0.9em;
+  background-color: #f5f5f5;
+  border-radius: 4px;
+  margin: 10px 0;
 }

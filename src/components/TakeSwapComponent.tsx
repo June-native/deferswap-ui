@@ -246,8 +246,8 @@ const TakeSwapComponent = ({
   }
 
   return (
-    <div className="swap-container">
-      <h2 className="oracle-title">Swap</h2>
+    <div className="main-container">
+      <h2 className="main-title">Take Swap</h2>
       <div className='input-group-container'>
         <b> Input ({quoteTokenMeta.symbol}):</b>
         <input
@@ -294,11 +294,11 @@ const TakeSwapComponent = ({
         <div><b>Collateral</b> {collateralRate && debouncedQuoteAmount && !exceedsMaxQuote && !lowerThanMinQuote ? (Number(collateralRate) / 10000 * Number(expectedBaseAmount) * Number(quoteAmount)).toFixed(2) : 0} {baseTokenMeta.symbol} ({ collateralRate ? Number(collateralRate) / 100 : 0 }%)</div>
       </div>
       {!isApproved ? (
-        <button onClick={handleApprove} disabled={!isSwapOkay.status} className="swap-button">
+        <button onClick={handleApprove} disabled={!isSwapOkay.status} className="swap-button full-width-button">
           {isSwapOkay.status ? 'Approve' : isSwapOkay.reason}
         </button>
       ) : (
-        <button onClick={handleSwap} disabled={!isSwapOkay.status} className="swap-button">
+        <button onClick={handleSwap} disabled={!isSwapOkay.status} className="swap-button full-width-button">
           {isSwapOkay.status ? 'Submit Swap' : isSwapOkay.reason}
         </button>
       )}

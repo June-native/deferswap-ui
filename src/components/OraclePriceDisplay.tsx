@@ -37,8 +37,8 @@ const OraclePriceDisplay = ({
   }, [refetch]);
 
   return (
-    <div className="oracle-container">
-      <h2 className="oracle-title">Oracle Price</h2>
+    <div className="main-container">
+      <h2 className="main-title">Oracle Price</h2>
       <div style={{ textAlign: 'center' }}>{oraclePrice ? `${oraclePrice} ${baseTokenMeta.symbol} per ${quoteTokenMeta.symbol}` : 'Loading...'}</div>
     </div>
   );

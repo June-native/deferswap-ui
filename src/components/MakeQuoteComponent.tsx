@@ -483,167 +483,175 @@ const MakeQuoteComponent = ({
   };
 
   return (
-    <div className="oracle-container">
-      <h2 className="oracle-title">Manage Pool</h2>
-      
-      <div className="sub-container">
-        <h3>Submit Quotes</h3>
-        <div className="tiers-container">
-          {sizeTiers.map((_, index) => (
-            <div key={index} className="tier-container">
-              <b>Size ({quoteTokenMeta.symbol}): </b>
-              <input
-                type="number"
-                value={sizeTiers[index]}
-                onChange={(e) => updateSizeTier(index, e.target.value)}
-                className="tier-input"
-                disabled={!isMarketMaker}
-              />
-              <b>Spread %: </b>
-              <input
-                type="number"
-                value={spreads[index]}
-                onChange={(e) => updateSpread(index, e.target.value)}
-                className="tier-input"
-                disabled={!isMarketMaker}
-              />
-              <button onClick={() => removeQuotePair(index)} className="button">
-                Remove
+    <div className="main-container">
+      {!isMarketMaker ? (
+        <div className="warning-message">
+          Connect to MM wallet {marketMaker} to manage this pool
+        </div>
+      ) : (
+        <>
+          <h2 className="main-title">Manage Pool</h2>
+          
+          <div className="sub-container">
+            <h3>Submit Quotes</h3>
+            <div className="tiers-container">
+              {sizeTiers.map((_, index) => (
+                <div key={index} className="tier-container">
+                  <b>Size ({quoteTokenMeta.symbol}): </b>
+                  <input
+                    type="number"
+                    value={sizeTiers[index]}
+                    onChange={(e) => updateSizeTier(index, e.target.value)}
+                    className="tier-input"
+                    disabled={!isMarketMaker}
+                  />
+                  <b>Spread %: </b>
+                  <input
+                    type="number"
+                    value={spreads[index]}
+                    onChange={(e) => updateSpread(index, e.target.value)}
+                    className="tier-input"
+                    disabled={!isMarketMaker}
+                  />
+                  <button onClick={() => removeQuotePair(index)} className="button">
+                    Remove
+                  </button>
+                </div>
+              ))}
+              <button onClick={addQuotePair} className="button" disabled={sizeTiers.length >= 10 || !isMarketMaker}>
+                Add Tier
               </button>
             </div>
-          ))}
-          <button onClick={addQuotePair} className="button" disabled={sizeTiers.length >= 10 || !isMarketMaker}>
-            Add Tier
-          </button>
-        </div>
-        <div className="wallet-info">
-          <div><b>Oracle Price:</b> {oraclePrice ? formatUnits(oraclePrice, baseTokenMeta.decimals) : 'Loading...'} {baseTokenMeta.symbol} per {quoteTokenMeta.symbol}</div>
-          <div><b>Required Collateral:</b> {formatUnits(requiredBaseAmount, baseTokenMeta.decimals)} {baseTokenMeta.symbol} (with 5% buffer)</div>
-          <div><b>Wallet Balance:</b> {balance ? formatUnits(balance, baseTokenMeta.decimals) : 0} {baseTokenMeta.symbol}</div>
-          <div><b>Last Swap Status:</b> {Number(swapCounter) > 0 ? lastSwapStatus : 'No Swaps Yet'}</div>
-          <div><b>Warnings:</b></div>
-          {!hasEnoughBalance && <div style={{ color: '#ff4444' }}>Insufficient balance for collateral</div>}
-          {swapCounter != 0 && !canSubmitQuote && lastSwapStatus && <div style={{ color: '#ff4444' }}>Cannot submit quote until last swap is settled, claimed, or cancelled</div>}
-          {!sizeTiersValid && <div style={{ color: '#ff4444' }}>Size tiers must be in ascending order</div>}
-        </div>
-        {!hasEnoughAllowance ? (
-          <button onClick={handleApprove} disabled={!isMarketMaker || sendingTx || !hasEnoughBalance} className="button full-width-button">
-            Approve {baseTokenMeta.symbol}
-          </button>
-        ) : (
-          <button onClick={handleQuote} disabled={!isMarketMaker || sendingTx || !hasEnoughBalance || (!canSubmitQuote && swapCounter != 0) || !sizeTiersValid} className="button full-width-button">
-            Submit Quotes
-          </button>
-        )}
-      </div>
-      <div className="sub-container">
-        <h3>Cancel Quote</h3>
-        <div style={{textAlign: 'center'}}>
-          <b>ID:</b>
-          <input
-            type="number"
-            value={swapId}
-            onChange={(e) => setSwapId(e.target.value)}
-            placeholder="Enter swap ID"
-            min="0"
-            className="swap-input"
-            disabled={!isMarketMaker}
-          />
-          <button onClick={handleCancelSwap} 
-            disabled={!isMarketMaker || sendingTx || (swapCounter && BigInt(swapId) >= BigInt(String(swapCounter))) || lastSwapStatus === 'settled' || lastSwapStatus === 'taken' || lastSwapStatus === 'claimed'} 
-            className="button" 
-            style={{ backgroundColor: '#ff4444' }}>
-            Cancel
-          </button>
-        </div>
-      </div>
-      <div className="sub-container">
-        <h3>Settle Quote</h3>
-        <div style={{textAlign: 'center'}}>
-          <b>ID:</b>
-          <input
-            type="number"
-            value={swapId}
-            onChange={(e) => setSwapId(e.target.value)}
-            placeholder="Enter swap ID"
-            min="0"
-            className="swap-input"
-            disabled={!isMarketMaker}
-          />
-          {!hasSettlementAllowance ? (
-            <button 
-              onClick={handleSettlementApprove} 
-              disabled={!isMarketMaker || sendingTx || !balance || BigInt(balance) < settlementBaseAmount} 
-              className="button" 
-              style={{ backgroundColor: '#4CAF50' }}
-            >
-              Approve {baseTokenMeta.symbol}
-            </button>
-          ) : (
-            <button 
-              onClick={handleSettleSwap} 
-              disabled={!isMarketMaker || sendingTx || !balance || BigInt(balance) < settlementBaseAmount || lastSwapStatus === 'settled' || lastSwapStatus === 'claimed'} 
-              className="button" 
-              style={{ backgroundColor: '#4CAF50' }}
-            >
-              Settle
-            </button>
-          )}
-          <div style={{ marginTop: '0.5rem', color: '#666' }}>
-            Required: {formatUnits(settlementBaseAmount, baseTokenMeta.decimals)} {baseTokenMeta.symbol}
+            <div className="wallet-info">
+              <div><b>Oracle Price:</b> {oraclePrice ? formatUnits(oraclePrice, baseTokenMeta.decimals) : 'Loading...'} {baseTokenMeta.symbol} per {quoteTokenMeta.symbol}</div>
+              <div><b>Required Collateral:</b> {formatUnits(requiredBaseAmount, baseTokenMeta.decimals)} {baseTokenMeta.symbol} (with 5% buffer)</div>
+              <div><b>Wallet Balance:</b> {balance ? formatUnits(balance, baseTokenMeta.decimals) : 0} {baseTokenMeta.symbol}</div>
+              <div><b>Last Swap Status:</b> {Number(swapCounter) > 0 ? lastSwapStatus : 'No Swaps Yet'}</div>
+              <div><b>Warnings:</b></div>
+              {!hasEnoughBalance && <div style={{ color: '#ff4444' }}>Insufficient balance for collateral</div>}
+              {swapCounter != 0 && !canSubmitQuote && lastSwapStatus && <div style={{ color: '#ff4444' }}>Cannot submit quote until last swap is settled, claimed, or cancelled</div>}
+              {!sizeTiersValid && <div style={{ color: '#ff4444' }}>Size tiers must be in ascending order</div>}
+            </div>
+            {!hasEnoughAllowance ? (
+              <button onClick={handleApprove} disabled={!isMarketMaker || sendingTx || !hasEnoughBalance} className="button full-width-button">
+                Approve {baseTokenMeta.symbol}
+              </button>
+            ) : (
+              <button onClick={handleQuote} disabled={!isMarketMaker || sendingTx || !hasEnoughBalance || (!canSubmitQuote && swapCounter != 0) || !sizeTiersValid} className="button full-width-button">
+                Submit Quotes
+              </button>
+            )}
           </div>
-        </div>
-      </div>
-      <div className="sub-container">
-        <h3>Pool Parameters</h3>
-        <div className="pool-params-container">
-          <div className="pool-param-row">
-            <span className="pool-param-label">Collateral Rate (%):</span>
-            <input
-              type="number"
-              value={penaltyRate}
-              onChange={(e) => setPenaltyRate(e.target.value)}
-              placeholder={`${formatUnits(currentPenaltyRate, 2)}%`}
-              step="0.01"
-              min="0"
-              className="pool-param-input"
-              disabled={!isMarketMaker}
-            />
-            <button onClick={handleSetPenaltyRate} disabled={!isMarketMaker || sendingTx} className="button">
-              Set
-            </button>
+          <div className="sub-container">
+            <h3>Cancel Quote</h3>
+            <div style={{textAlign: 'center'}}>
+              <b>ID:</b>
+              <input
+                type="number"
+                value={swapId}
+                onChange={(e) => setSwapId(e.target.value)}
+                placeholder="Enter swap ID"
+                min="0"
+                className="swap-input"
+                disabled={!isMarketMaker}
+              />
+              <button onClick={handleCancelSwap} 
+                disabled={!isMarketMaker || sendingTx || (swapCounter && BigInt(swapId) >= BigInt(String(swapCounter))) || lastSwapStatus === 'settled' || lastSwapStatus === 'taken' || lastSwapStatus === 'claimed'} 
+                className="button" 
+                style={{ backgroundColor: '#ff4444' }}>
+                Cancel
+              </button>
+            </div>
           </div>
-          <div className="pool-param-row">
-            <span className="pool-param-label">Min Quote Size ({quoteTokenMeta.symbol}):</span>
-            <input
-              type="number"
-              value={minQuoteSize}
-              onChange={(e) => setMinQuoteSize(e.target.value)}
-              placeholder={`${formatUnits(currentMinQuoteSize, quoteTokenMeta.decimals)}`}
-              className="pool-param-input"
-              disabled={!isMarketMaker}
-            />
-            <button onClick={handleSetMinQuoteSize} disabled={!isMarketMaker || sendingTx} className="button">
-              Set
-            </button>
+          <div className="sub-container">
+            <h3>Settle Quote</h3>
+            <div style={{textAlign: 'center'}}>
+              <b>ID:</b>
+              <input
+                type="number"
+                value={swapId}
+                onChange={(e) => setSwapId(e.target.value)}
+                placeholder="Enter swap ID"
+                min="0"
+                className="swap-input"
+                disabled={!isMarketMaker}
+              />
+              {!hasSettlementAllowance ? (
+                <button 
+                  onClick={handleSettlementApprove} 
+                  disabled={!isMarketMaker || sendingTx || !balance || BigInt(balance) < settlementBaseAmount} 
+                  className="button" 
+                  style={{ backgroundColor: '#4CAF50' }}
+                >
+                  Approve {baseTokenMeta.symbol}
+                </button>
+              ) : (
+                <button 
+                  onClick={handleSettleSwap} 
+                  disabled={!isMarketMaker || sendingTx || !balance || BigInt(balance) < settlementBaseAmount || lastSwapStatus === 'settled' || lastSwapStatus === 'claimed'} 
+                  className="button" 
+                  style={{ backgroundColor: '#4CAF50' }}
+                >
+                  Settle
+                </button>
+              )}
+              <div style={{ marginTop: '0.5rem', color: '#666' }}>
+                Required: {formatUnits(settlementBaseAmount, baseTokenMeta.decimals)} {baseTokenMeta.symbol}
+              </div>
+            </div>
           </div>
-          <div className="pool-param-row">
-            <span className="pool-param-label">Settlement Period (hours):</span>
-            <input
-              type="number"
-              value={settlementPeriod}
-              onChange={(e) => setSettlementPeriod(e.target.value)}
-              placeholder={`${Number(formatUnits(currentSettlementPeriod, 0)) / 3600} hours`}
-              min="0"
-              className="pool-param-input"
-              disabled={!isMarketMaker}
-            />
-            <button onClick={handleSetSettlementPeriod} disabled={!isMarketMaker || sendingTx} className="button">
-              Set
-            </button>
+          <div className="sub-container">
+            <h3>Pool Parameters</h3>
+            <div className="pool-params-container">
+              <div className="pool-param-row">
+                <span className="pool-param-label">Collateral Rate (%):</span>
+                <input
+                  type="number"
+                  value={penaltyRate}
+                  onChange={(e) => setPenaltyRate(e.target.value)}
+                  placeholder={`${formatUnits(currentPenaltyRate, 2)}%`}
+                  step="0.01"
+                  min="0"
+                  className="pool-param-input"
+                  disabled={!isMarketMaker}
+                />
+                <button onClick={handleSetPenaltyRate} disabled={!isMarketMaker || sendingTx} className="button">
+                  Set
+                </button>
+              </div>
+              <div className="pool-param-row">
+                <span className="pool-param-label">Min Quote Size ({quoteTokenMeta.symbol}):</span>
+                <input
+                  type="number"
+                  value={minQuoteSize}
+                  onChange={(e) => setMinQuoteSize(e.target.value)}
+                  placeholder={`${formatUnits(currentMinQuoteSize, quoteTokenMeta.decimals)}`}
+                  className="pool-param-input"
+                  disabled={!isMarketMaker}
+                />
+                <button onClick={handleSetMinQuoteSize} disabled={!isMarketMaker || sendingTx} className="button">
+                  Set
+                </button>
+              </div>
+              <div className="pool-param-row">
+                <span className="pool-param-label">Settlement Period (hours):</span>
+                <input
+                  type="number"
+                  value={settlementPeriod}
+                  onChange={(e) => setSettlementPeriod(e.target.value)}
+                  placeholder={`${Number(formatUnits(currentSettlementPeriod, 0)) / 3600} hours`}
+                  min="0"
+                  className="pool-param-input"
+                  disabled={!isMarketMaker}
+                />
+                <button onClick={handleSetSettlementPeriod} disabled={!isMarketMaker || sendingTx} className="button">
+                  Set
+                </button>
+              </div>
+            </div>
           </div>
-        </div>
-      </div>
+        </>
+      )}
     </div>
   );
 };

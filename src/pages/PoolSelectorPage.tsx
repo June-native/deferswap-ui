@@ -8,9 +8,9 @@ const PoolSelectorPage = () => {
   const navigate = useNavigate();
 
   return (
-    <div style={{ maxWidth: '400px', margin: '0 auto', padding: '2rem' }}>
-      <h1 style={{ fontWeight: 'bold', marginBottom: '1rem' }}>🐳 🔸 DeferSwap</h1>
-      <div className="swap-container">
+    <div className="main-container" style={{ maxWidth: '400px', margin: '0 auto', padding: '2rem', marginTop: '2rem' }}>
+      <h2 className="main-title">🐳 🔸 DeferSwap</h2>
+      <div className="sub-container">
         <h2 className="oracle-title">Select a Pool to Start</h2>
         <select
           value={selected}
@@ -26,14 +26,14 @@ const PoolSelectorPage = () => {
 
         <button
           onClick={() => navigate(`/swap?pool=${selected}`)}
-          className="swap-button"
+          className="swap-button full-width-button"
         >
           Swap
         </button>
 
         <button
           onClick={() => navigate(`/mm?pool=${selected}`)}
-          className="swap-button"
+          className="swap-button full-width-button"
         >
           PMM Quote
         </button>

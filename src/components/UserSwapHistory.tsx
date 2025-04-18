@@ -126,10 +126,8 @@ const UserSwapHistory = ({
   };
 
   return (
-    <div className="history-container">
-      <div className="flex justify-between items-center mb-2">
-          <h2 className="text-xl font-bold oracle-title">My Swaps</h2>
-      </div>
+    <div className="main-container">
+      <h2 className="main-title">Your Swap History</h2>
       {swapCount === null ? (
         <p>Loading swap history...</p>
       ) : userSwaps.length === 0 ? (

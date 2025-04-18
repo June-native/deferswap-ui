@@ -114,10 +114,8 @@ const AllQuoteHistory = forwardRef(({
   }));
 
   return (
-    <div className="history-container">
-      <div className="flex justify-between items-center mb-2">
-          <h2 className="oracle-title">All Quotes</h2>
-      </div>
+    <div className="main-container">
+      <h2 className="main-title">All Quote History</h2>
       {swapCount === null ? (
         <p>Loading quotes...</p>
       ) : userSwaps.length === 0 ? (
