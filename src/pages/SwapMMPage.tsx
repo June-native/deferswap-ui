@@ -29,7 +29,7 @@ const SwapMMPage = () => {
   const [baseTokenMeta, setBaseTokenMeta] = useState({ symbol: '', decimals: 18 });
   const [quoteTokenMeta, setQuoteTokenMeta] = useState({ symbol: '', decimals: 18 });
   const [ready, setReady] = useState(false);
-  const [marketMaker, setMarketMaker] = useState<string | null>(null);
+  const [marketMaker, setMarketMaker] = useState<`0x${string}` | null>(null);
 
   useEffect(() => {
     const loadMetadata = async () => {
@@ -39,19 +39,19 @@ const SwapMMPage = () => {
         publicClient.readContract({
           address: poolAddress as `0x${string}`,
           abi: poolAbi,
-          functionName: 'baseToken',
+          functionName: 'baseToken'
         }),
         publicClient.readContract({
           address: poolAddress as `0x${string}`,
           abi: poolAbi,
-          functionName: 'quoteToken',
+          functionName: 'quoteToken'
         }),
         publicClient.readContract({
           address: poolAddress as `0x${string}`,
           abi: poolAbi,
-          functionName: 'marketMaker',
-        }),
-      ]);
+          functionName: 'marketMaker'
+        })
+      ]) as [`0x${string}`, `0x${string}`, `0x${string}`];
 
       const [baseSymbol, baseDecimals] = await Promise.all([
         publicClient.readContract({ address: baseToken as `0x${string}`, abi: erc20Abi, functionName: 'symbol' }),
