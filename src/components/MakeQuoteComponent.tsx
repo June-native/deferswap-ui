@@ -40,6 +40,10 @@ const MakeQuoteComponent = ({
   const [currentMinQuoteSize, setCurrentMinQuoteSize] = useState<bigint>(0n);
   const [currentSettlementPeriod, setCurrentSettlementPeriod] = useState<bigint>(0n);
 
+  // Add state for settlement
+  const [settlementBaseAmount, setSettlementBaseAmount] = useState<bigint>(0n);
+  const [hasSettlementAllowance, setHasSettlementAllowance] = useState<boolean>(false);
+
   const { data: baseToken } = useReadContract({
     address: poolAddress as `0x${string}`,
     abi: poolAbi,
@@ -82,6 +86,14 @@ const MakeQuoteComponent = ({
     address: poolAddress as `0x${string}`,
     abi: poolAbi,
     functionName: 'settlementPeriod',
+  });
+
+  // Add contract calls for settlement
+  const { data: settlementAllowance, refetch: refetchSettlementAllowance } = useReadContract({
+    address: baseToken as `0x${string}`,
+    abi: erc20Abi,
+    functionName: 'allowance',
+    args: [address, poolAddress as `0x${string}`],
   });
 
   useEffect(() => {
@@ -183,6 +195,7 @@ const MakeQuoteComponent = ({
   const { writeContractAsync: writeSetMinQuoteSize } = useWriteContract();
   const { writeContractAsync: writeSetSettlementPeriod } = useWriteContract();
   const { writeContractAsync: writeCancelSwap } = useWriteContract();
+  const { writeContractAsync: writeSettleSwap } = useWriteContract();
 
   const handleApprove = async () => {
     try {
@@ -406,6 +419,64 @@ const MakeQuoteComponent = ({
     }
   }, [swapCounter]);
 
+  // Update settlement state when last swap changes
+  useEffect(() => {
+    if (lastSwap) {
+      setSettlementBaseAmount(lastSwap[2]); // baseAmount is at index 2
+    }
+  }, [lastSwap]);
+
+  // Update allowance state
+  useEffect(() => {
+    if (settlementAllowance && settlementBaseAmount) {
+      setHasSettlementAllowance(BigInt(settlementAllowance) >= settlementBaseAmount);
+    }
+  }, [settlementAllowance, settlementBaseAmount]);
+
+  // Add handlers for settlement
+  const handleSettlementApprove = async () => {
+    try {
+      setSendingTx(true);
+      const hash = await writeApprove({
+        address: baseToken as `0x${string}`,
+        abi: erc20Abi,
+        functionName: 'approve',
+        args: [poolAddress as `0x${string}`, settlementBaseAmount],
+        account,
+        chain: chain,
+      });
+      console.log("Approved for settlement: ", hash);
+      await publicClient.waitForTransactionReceipt({ hash });
+      await refetchSettlementAllowance();
+    } catch (err) {
+      console.error('Settlement approval failed:', err);
+    } finally {
+      setSendingTx(false);
+    }
+  };
+
+  const handleSettleSwap = async () => {
+    try {
+      setSendingTx(true);
+      const hash = await writeSettleSwap({
+        address: poolAddress as `0x${string}`,
+        abi: poolAbi,
+        functionName: 'settleSwap',
+        args: [BigInt(swapId)],
+        account,
+        chain: chain,
+      });
+      console.log("Swap settled: ", hash);
+      await publicClient.waitForTransactionReceipt({ hash });
+      await updateLastSwapStatus();
+      onRefreshQuotes?.();
+    } catch (err) {
+      console.error('Settlement transaction failed:', err);
+    } finally {
+      setSendingTx(false);
+    }
+  };
+
   return (
     <div className="oracle-container">
       <h2 className="oracle-title">Manage Pool</h2>
@@ -431,12 +502,12 @@ const MakeQuoteComponent = ({
                 className="tier-input"
                 disabled={!address}
               />
-              <button onClick={() => removeQuotePair(index)} className="button" style={{ backgroundColor: '#ff4444' }}>
+              <button onClick={() => removeQuotePair(index)} className="button">
                 Remove
               </button>
             </div>
           ))}
-          <button onClick={addQuotePair} className="button" disabled={sizeTiers.length >= 10} style={{ backgroundColor: '#4CAF50' }}>
+          <button onClick={addQuotePair} className="button" disabled={sizeTiers.length >= 10}>
             Add Tier
           </button>
         </div>
@@ -473,9 +544,49 @@ const MakeQuoteComponent = ({
             className="swap-input"
             disabled={!address}
           />
-          <button onClick={handleCancelSwap} disabled={!address || sendingTx || (swapCounter && BigInt(swapId) >= BigInt(String(swapCounter)))} className="button" style={{ backgroundColor: '#ff4444' }}>
+          <button onClick={handleCancelSwap} 
+            disabled={!address || sendingTx || (swapCounter && BigInt(swapId) >= BigInt(String(swapCounter))) || lastSwapStatus === 'settled' || lastSwapStatus === 'taken'} 
+            className="button" 
+            style={{ backgroundColor: '#ff4444' }}>
             Cancel
           </button>
+        </div>
+      </div>
+      <div className="sub-container">
+        <h3>Settle Quote</h3>
+        <div style={{textAlign: 'center'}}>
+          <b>ID:</b>
+          <input
+            type="number"
+            value={swapId}
+            onChange={(e) => setSwapId(e.target.value)}
+            placeholder="Enter swap ID"
+            min="0"
+            className="swap-input"
+            disabled={!address}
+          />
+          {!hasSettlementAllowance ? (
+            <button 
+              onClick={handleSettlementApprove} 
+              disabled={!address || sendingTx || !balance || BigInt(balance) < settlementBaseAmount} 
+              className="button" 
+              style={{ backgroundColor: '#4CAF50' }}
+            >
+              Approve {baseTokenMeta.symbol}
+            </button>
+          ) : (
+            <button 
+              onClick={handleSettleSwap} 
+              disabled={!address || sendingTx || !balance || BigInt(balance) < settlementBaseAmount || lastSwapStatus === 'settled'} 
+              className="button" 
+              style={{ backgroundColor: '#4CAF50' }}
+            >
+              Settle
+            </button>
+          )}
+          <div style={{ marginTop: '0.5rem', color: '#666' }}>
+            Required: {formatUnits(settlementBaseAmount, baseTokenMeta.decimals)} {baseTokenMeta.symbol}
+          </div>
         </div>
       </div>
       <div className="sub-container">

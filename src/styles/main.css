@@ -106,7 +106,7 @@
 }
 
 .button:disabled, .swap-button:disabled {
-  background-color: #BBB;
+  background-color: #BBB !important;
 }
 
 .history-container {
