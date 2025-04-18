@@ -175,6 +175,7 @@ td {
   background-position: right 12px center;
   background-size: 12px 8px;
   cursor: pointer;
+  margin-bottom: 1rem;
 }
 
 .dropdown:focus {
@@ -190,9 +191,10 @@ td {
   border: 1px solid #e9ecef;
   margin-bottom: 0.75rem;
   display: inline-flex;
-  gap: 1.5rem;
+  gap: 0.5rem;
   align-items: center;
   margin: 0.5rem 0;
+  width: 90%;
 }
 
 .tier-container b {

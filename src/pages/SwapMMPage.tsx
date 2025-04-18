@@ -29,12 +29,13 @@ const SwapMMPage = () => {
   const [baseTokenMeta, setBaseTokenMeta] = useState({ symbol: '', decimals: 18 });
   const [quoteTokenMeta, setQuoteTokenMeta] = useState({ symbol: '', decimals: 18 });
   const [ready, setReady] = useState(false);
+  const [marketMaker, setMarketMaker] = useState<string | null>(null);
 
   useEffect(() => {
     const loadMetadata = async () => {
       if (!poolAddress) return;
 
-      const [baseToken, quoteToken] = await Promise.all([
+      const [baseToken, quoteToken, mm] = await Promise.all([
         publicClient.readContract({
           address: poolAddress as `0x${string}`,
           abi: poolAbi,
@@ -44,6 +45,11 @@ const SwapMMPage = () => {
           address: poolAddress as `0x${string}`,
           abi: poolAbi,
           functionName: 'quoteToken',
+        }),
+        publicClient.readContract({
+          address: poolAddress as `0x${string}`,
+          abi: poolAbi,
+          functionName: 'marketMaker',
         }),
       ]);
 
@@ -59,6 +65,7 @@ const SwapMMPage = () => {
 
       setBaseTokenMeta({ symbol: baseSymbol, decimals: baseDecimals });
       setQuoteTokenMeta({ symbol: quoteSymbol, decimals: quoteDecimals });
+      setMarketMaker(mm);
       setReady(true);
     };
 
@@ -75,8 +82,18 @@ const SwapMMPage = () => {
   }
 
   return (
-    <div style={{ maxWidth: '800px', margin: '0 auto', padding: '2rem' }}>
-      <h1 style={{ fontWeight: 'bold', marginBottom: '1rem' }}>🐳 🔸 DeferSwap (Bsc {baseTokenMeta.symbol}/{quoteTokenMeta.symbol})</h1>
+    <div style={{ maxWidth: '800px', margin: '0 auto', padding: '2rem', position: 'relative' }}>
+      <h1 
+        style={{ 
+          fontWeight: 'bold', 
+          marginBottom: '1rem',
+          cursor: 'pointer',
+          display: 'inline-block'
+        }}
+        onClick={() => window.location.href = '/'}
+      >
+        🐳 🔸 DeferSwap (Bsc {baseTokenMeta.symbol}/{quoteTokenMeta.symbol})
+      </h1>
       <WalletConnectButton />
       <div style={{ marginBottom: '2rem' }}/>
       <AllQuoteHistory ref={allQuoteHistoryRef} poolAddress={poolAddress} baseTokenMeta={baseTokenMeta} quoteTokenMeta={quoteTokenMeta} />
@@ -90,6 +107,7 @@ const SwapMMPage = () => {
         onRefreshQuotes={() => {
           allQuoteHistoryRef.current?.refresh();
         }}
+        marketMaker={marketMaker}
       />
     </div>
   );

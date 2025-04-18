@@ -12,12 +12,14 @@ const MakeQuoteComponent = ({
   quoteTokenMeta,
   onQuoteSuccess,
   onRefreshQuotes,
+  marketMaker,
 }: {
   poolAddress: string;
   baseTokenMeta: { symbol: string; decimals: number };
   quoteTokenMeta: { symbol: string; decimals: number };
   onQuoteSuccess: () => void;
   onRefreshQuotes: () => void;
+  marketMaker: string | null;
 }) => {
   const { address } = useAccount();
   const [sizeTiers, setSizeTiers] = useState<string[]>(['']);
@@ -43,6 +45,9 @@ const MakeQuoteComponent = ({
   // Add state for settlement
   const [settlementBaseAmount, setSettlementBaseAmount] = useState<bigint>(0n);
   const [hasSettlementAllowance, setHasSettlementAllowance] = useState<boolean>(false);
+
+  // Add isMarketMaker check
+  const isMarketMaker = address && marketMaker && address.toLowerCase() === marketMaker.toLowerCase();
 
   const { data: baseToken } = useReadContract({
     address: poolAddress as `0x${string}`,
@@ -492,7 +497,7 @@ const MakeQuoteComponent = ({
                 value={sizeTiers[index]}
                 onChange={(e) => updateSizeTier(index, e.target.value)}
                 className="tier-input"
-                disabled={!address}
+                disabled={!isMarketMaker}
               />
               <b>Spread %: </b>
               <input
@@ -500,14 +505,14 @@ const MakeQuoteComponent = ({
                 value={spreads[index]}
                 onChange={(e) => updateSpread(index, e.target.value)}
                 className="tier-input"
-                disabled={!address}
+                disabled={!isMarketMaker}
               />
               <button onClick={() => removeQuotePair(index)} className="button">
                 Remove
               </button>
             </div>
           ))}
-          <button onClick={addQuotePair} className="button" disabled={sizeTiers.length >= 10}>
+          <button onClick={addQuotePair} className="button" disabled={sizeTiers.length >= 10 || !isMarketMaker}>
             Add Tier
           </button>
         </div>
@@ -522,11 +527,11 @@ const MakeQuoteComponent = ({
           {!sizeTiersValid && <div style={{ color: '#ff4444' }}>Size tiers must be in ascending order</div>}
         </div>
         {!hasEnoughAllowance ? (
-          <button onClick={handleApprove} disabled={!address || sendingTx || !hasEnoughBalance} className="button full-width-button">
+          <button onClick={handleApprove} disabled={!isMarketMaker || sendingTx || !hasEnoughBalance} className="button full-width-button">
             Approve {baseTokenMeta.symbol}
           </button>
         ) : (
-          <button onClick={handleQuote} disabled={!address || sendingTx || !hasEnoughBalance || (!canSubmitQuote && swapCounter != 0) || !sizeTiersValid} className="button full-width-button">
+          <button onClick={handleQuote} disabled={!isMarketMaker || sendingTx || !hasEnoughBalance || (!canSubmitQuote && swapCounter != 0) || !sizeTiersValid} className="button full-width-button">
             Submit Quotes
           </button>
         )}
@@ -542,10 +547,10 @@ const MakeQuoteComponent = ({
             placeholder="Enter swap ID"
             min="0"
             className="swap-input"
-            disabled={!address}
+            disabled={!isMarketMaker}
           />
           <button onClick={handleCancelSwap} 
-            disabled={!address || sendingTx || (swapCounter && BigInt(swapId) >= BigInt(String(swapCounter))) || lastSwapStatus === 'settled' || lastSwapStatus === 'taken'} 
+            disabled={!isMarketMaker || sendingTx || (swapCounter && BigInt(swapId) >= BigInt(String(swapCounter))) || lastSwapStatus === 'settled' || lastSwapStatus === 'taken' || lastSwapStatus === 'claimed'} 
             className="button" 
             style={{ backgroundColor: '#ff4444' }}>
             Cancel
@@ -563,12 +568,12 @@ const MakeQuoteComponent = ({
             placeholder="Enter swap ID"
             min="0"
             className="swap-input"
-            disabled={!address}
+            disabled={!isMarketMaker}
           />
           {!hasSettlementAllowance ? (
             <button 
               onClick={handleSettlementApprove} 
-              disabled={!address || sendingTx || !balance || BigInt(balance) < settlementBaseAmount} 
+              disabled={!isMarketMaker || sendingTx || !balance || BigInt(balance) < settlementBaseAmount} 
               className="button" 
               style={{ backgroundColor: '#4CAF50' }}
             >
@@ -577,7 +582,7 @@ const MakeQuoteComponent = ({
           ) : (
             <button 
               onClick={handleSettleSwap} 
-              disabled={!address || sendingTx || !balance || BigInt(balance) < settlementBaseAmount || lastSwapStatus === 'settled'} 
+              disabled={!isMarketMaker || sendingTx || !balance || BigInt(balance) < settlementBaseAmount || lastSwapStatus === 'settled' || lastSwapStatus === 'claimed'} 
               className="button" 
               style={{ backgroundColor: '#4CAF50' }}
             >
@@ -602,9 +607,9 @@ const MakeQuoteComponent = ({
               step="0.01"
               min="0"
               className="pool-param-input"
-              disabled={!address}
+              disabled={!isMarketMaker}
             />
-            <button onClick={handleSetPenaltyRate} disabled={!address || sendingTx} className="button">
+            <button onClick={handleSetPenaltyRate} disabled={!isMarketMaker || sendingTx} className="button">
               Set
             </button>
           </div>
@@ -616,9 +621,9 @@ const MakeQuoteComponent = ({
               onChange={(e) => setMinQuoteSize(e.target.value)}
               placeholder={`${formatUnits(currentMinQuoteSize, quoteTokenMeta.decimals)}`}
               className="pool-param-input"
-              disabled={!address}
+              disabled={!isMarketMaker}
             />
-            <button onClick={handleSetMinQuoteSize} disabled={!address || sendingTx} className="button">
+            <button onClick={handleSetMinQuoteSize} disabled={!isMarketMaker || sendingTx} className="button">
               Set
             </button>
           </div>
@@ -631,9 +636,9 @@ const MakeQuoteComponent = ({
               placeholder={`${Number(formatUnits(currentSettlementPeriod, 0)) / 3600} hours`}
               min="0"
               className="pool-param-input"
-              disabled={!address}
+              disabled={!isMarketMaker}
             />
-            <button onClick={handleSetSettlementPeriod} disabled={!address || sendingTx} className="button">
+            <button onClick={handleSetSettlementPeriod} disabled={!isMarketMaker || sendingTx} className="button">
               Set
             </button>
           </div>

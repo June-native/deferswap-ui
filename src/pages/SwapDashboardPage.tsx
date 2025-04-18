@@ -72,8 +72,18 @@ const SwapDashboardPage = () => {
   }
 
   return (
-    <div style={{ maxWidth: '800px', margin: '0 auto', padding: '2rem' }}>
-      <h1 style={{ fontWeight: 'bold', marginBottom: '1rem' }}>🐳 🔸 DeferSwap (Bsc {baseTokenMeta.symbol}/{quoteTokenMeta.symbol})</h1>
+    <div style={{ maxWidth: '800px', margin: '0 auto', padding: '2rem', position: 'relative' }}>
+      <h1 
+        style={{ 
+          fontWeight: 'bold', 
+          marginBottom: '1rem',
+          cursor: 'pointer',
+          display: 'inline-block'
+        }}
+        onClick={() => window.location.href = '/'}
+      >
+        🐳 🔸 DeferSwap (Bsc {baseTokenMeta.symbol}/{quoteTokenMeta.symbol})
+      </h1>
       <WalletConnectButton />
 
       <OraclePriceDisplay poolAddress={poolAddress} baseTokenMeta={baseTokenMeta} quoteTokenMeta={quoteTokenMeta} />
