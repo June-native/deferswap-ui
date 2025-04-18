@@ -248,16 +248,20 @@ const TakeSwapComponent = ({
   return (
     <div className="swap-container">
       <h2 className="oracle-title">Swap</h2>
-      <b> Input ({quoteTokenMeta.symbol}):</b>
-      <input
-        type="number"
-        value={quoteAmount}
-        onChange={(e) => setQuoteAmount(e.target.value)}
-        placeholder="Enter amount to swap"
-        max={balance ? formatUnits(balance, quoteTokenMeta.decimals) : ''}
-        className="swap-input"
-        disabled={!address}
-      />
+      <div className='input-group-container'>
+        <b> Input ({quoteTokenMeta.symbol}):</b>
+        <input
+          type="number"
+          value={quoteAmount}
+          onChange={(e) => setQuoteAmount(e.target.value)}
+          placeholder="Enter amount to swap"
+          max={balance ? formatUnits(balance, quoteTokenMeta.decimals) : ''}
+          className="swap-input"
+          disabled={!address}
+        />
+        <p className='input-group-container-note'>{balance ? formatUnits(balance, quoteTokenMeta.decimals) : 0} {quoteTokenMeta.symbol} available</p>
+      </div>
+      <div className='input-group-container'>
       <b>Output ({baseTokenMeta.symbol}):</b>
       <input
         type="number"
@@ -268,22 +272,27 @@ const TakeSwapComponent = ({
         disabled
         className="swap-input"
       />
+      </div>
+      <div className='input-group-container'>
       <b>Slippage %:</b>
       <input
         type="number"
         value={slippage}
         onChange={(e) => setSlippage(e.target.value)}
         placeholder="Slippage %"
-        step="0.1"
-        min="0"
-        className="swap-input"
-        disabled={!address}
-      />
-      <div><b>Price:</b> {!exceedsMaxQuote ? expectedBaseAmount : 0} {baseTokenMeta.symbol} per {quoteTokenMeta.symbol}</div>
-      <div><b>Wallet Balance:</b> {balance ? formatUnits(balance, quoteTokenMeta.decimals) : 0} {quoteTokenMeta.symbol}</div>
-      <div><b>Min/Max Quote Size:</b> {minQuoteSize ? formatUnits(minQuoteSize, quoteTokenMeta.decimals) : 0}/{latestSwap ? formatUnits(latestSwap[3], quoteTokenMeta.decimals) : 0} {quoteTokenMeta.symbol}</div>
-      <div><b>Settlement Period:</b> {settlementPeriod ? Number(settlementPeriod) / 60 / 60 : ''} hours</div>
-      <div><b>Collateral</b> {collateralRate && debouncedQuoteAmount && !exceedsMaxQuote && !lowerThanMinQuote ? (Number(collateralRate) / 10000 * Number(expectedBaseAmount) * Number(quoteAmount)).toFixed(2) : 0} {baseTokenMeta.symbol} ({ collateralRate ? Number(collateralRate) / 100 : 0 }%)</div>
+          step="0.1"
+          min="0"
+          className="swap-input"
+          disabled={!address}
+        />
+      </div>
+      <div className='compact-list'>
+        <div><b>Price:</b> {!exceedsMaxQuote ? expectedBaseAmount : 0} {baseTokenMeta.symbol} per {quoteTokenMeta.symbol}</div>
+        {/* <div><b>Wallet Balance:</b> {balance ? formatUnits(balance, quoteTokenMeta.decimals) : 0} {quoteTokenMeta.symbol}</div> */}
+        <div><b>Min/Max Quote Size:</b> {minQuoteSize ? formatUnits(minQuoteSize, quoteTokenMeta.decimals) : 0}/{latestSwap ? formatUnits(latestSwap[3], quoteTokenMeta.decimals) : 0} {quoteTokenMeta.symbol}</div>
+        <div><b>Settlement Period:</b> {settlementPeriod ? Number(settlementPeriod) / 60 / 60 : ''} hours</div>
+        <div><b>Collateral</b> {collateralRate && debouncedQuoteAmount && !exceedsMaxQuote && !lowerThanMinQuote ? (Number(collateralRate) / 10000 * Number(expectedBaseAmount) * Number(quoteAmount)).toFixed(2) : 0} {baseTokenMeta.symbol} ({ collateralRate ? Number(collateralRate) / 100 : 0 }%)</div>
+      </div>
       {!isApproved ? (
         <button onClick={handleApprove} disabled={!isSwapOkay.status} className="swap-button">
           {isSwapOkay.status ? 'Approve' : isSwapOkay.reason}

@@ -1,11 +1,11 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, forwardRef, useImperativeHandle } from 'react';
 import { useAccount, useWriteContract } from 'wagmi';
 import { poolAbi } from '../config/abi';
 import { publicClient } from '../lib/viem';
 import { bsc as chain } from 'viem/chains';
 import { parseUnits, formatUnits } from 'viem';
 
-const AllQuoteHistory = ({
+const AllQuoteHistory = forwardRef(({
   poolAddress,
   baseTokenMeta,
   quoteTokenMeta,
@@ -13,7 +13,7 @@ const AllQuoteHistory = ({
   poolAddress: string;
   baseTokenMeta: { symbol: string; decimals: number };
   quoteTokenMeta: { symbol: string; decimals: number };
-}) => {
+}, ref) => {
   const [userSwaps, setUserSwaps] = useState([]);
   const [swapCount, setSwapCount] = useState<number | null>(null);
   const [refreshing, setRefreshing] = useState(false);
@@ -107,10 +107,16 @@ const AllQuoteHistory = ({
 
   const explorerLink = `https://bscscan.com/address/${poolAddress}`;
 
+  useImperativeHandle(ref, () => ({
+    refresh: () => {
+      fetchSwapCountAndSwaps();
+    }
+  }));
+
   return (
     <div className="history-container">
       <div className="flex justify-between items-center mb-2">
-          <h2 className="text-xl font-bold">All Quotes</h2>
+          <h2 className="oracle-title">All Quotes</h2>
       </div>
       {swapCount === null ? (
         <p>Loading quotes...</p>
@@ -207,6 +213,6 @@ const AllQuoteHistory = ({
       <p><b>Explorer:</b> <a href={explorerLink} target="_blank">{explorerLink}</a></p>
     </div>
   );
-};
+});
 
 export default AllQuoteHistory;

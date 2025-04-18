@@ -1,6 +1,7 @@
 import React from 'react';
 import ReactDOM from 'react-dom/client';
 import App from './App';
+import './styles/main.css';
 
 import { WagmiProvider, createConfig, http, fallback } from 'wagmi';
 import { bsc } from 'wagmi/chains';

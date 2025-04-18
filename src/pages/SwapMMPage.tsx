@@ -5,7 +5,8 @@ import OraclePriceDisplay from '../components/OraclePriceDisplay';
 import UserSwapHistory from '../components/UserSwapHistory';
 import AllQuoteHistory from '../components/AllQuoteHistory';
 import WalletConnectButton from '../components/WalletConnectButton';
-import { useEffect, useState } from 'react';
+import MakeQuoteComponent from '../components/MakeQuoteComponent';
+import { useEffect, useState, useRef } from 'react';
 import { publicClient } from '../lib/viem';
 import { erc20Abi } from 'viem';
 import { poolAbi } from '../config/abi';
@@ -23,6 +24,7 @@ const SwapMMPage = () => {
   const { connectors, connect } = useConnect();
   const { disconnect } = useDisconnect();
   const [refreshKey, setRefreshKey] = useState(0);
+  const allQuoteHistoryRef = useRef<{ refresh: () => void }>(null);
 
   const [baseTokenMeta, setBaseTokenMeta] = useState({ symbol: '', decimals: 18 });
   const [quoteTokenMeta, setQuoteTokenMeta] = useState({ symbol: '', decimals: 18 });
@@ -75,8 +77,20 @@ const SwapMMPage = () => {
   return (
     <div style={{ maxWidth: '800px', margin: '0 auto', padding: '2rem' }}>
       <h1 style={{ fontWeight: 'bold', marginBottom: '1rem' }}>🐳 🔸 DeferSwap (Bsc {baseTokenMeta.symbol}/{quoteTokenMeta.symbol})</h1>
+      <WalletConnectButton />
       <div style={{ marginBottom: '2rem' }}/>
-      <AllQuoteHistory poolAddress={poolAddress} baseTokenMeta={baseTokenMeta} quoteTokenMeta={quoteTokenMeta} />
+      <AllQuoteHistory ref={allQuoteHistoryRef} poolAddress={poolAddress} baseTokenMeta={baseTokenMeta} quoteTokenMeta={quoteTokenMeta} />
+      <div style={{ marginBottom: '2rem' }}/>
+      <MakeQuoteComponent
+        poolAddress={poolAddress}
+        baseTokenMeta={baseTokenMeta}
+        quoteTokenMeta={quoteTokenMeta}
+        onQuoteSuccess={() => {
+        }}
+        onRefreshQuotes={() => {
+          allQuoteHistoryRef.current?.refresh();
+        }}
+      />
     </div>
   );
 };

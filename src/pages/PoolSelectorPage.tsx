@@ -28,14 +28,14 @@ const PoolSelectorPage = () => {
           onClick={() => navigate(`/swap?pool=${selected}`)}
           className="swap-button"
         >
-          Trade
+          Swap
         </button>
 
         <button
           onClick={() => navigate(`/mm?pool=${selected}`)}
           className="swap-button"
         >
-          All Quotes
+          Quote
         </button>
       </div>
     </div>
