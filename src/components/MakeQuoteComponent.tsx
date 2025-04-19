@@ -470,7 +470,7 @@ const MakeQuoteComponent = ({
         functionName: 'settleSwap',
         args: [BigInt(swapId)],
         account,
-        chain: chain,
+        chain: NETWORK.chain,
       });
       console.log("Swap settled: ", hash);
       await publicClient.waitForTransactionReceipt({ hash });
@@ -580,7 +580,7 @@ const MakeQuoteComponent = ({
               {!hasSettlementAllowance ? (
                 <button 
                   onClick={handleSettlementApprove} 
-                  disabled={!isMarketMaker || sendingTx || !balance || BigInt(balance) < settlementBaseAmount} 
+                  disabled={!isMarketMaker || sendingTx || !balance || BigInt(balance) < settlementBaseAmount || !lastSwap?.[6]}
                   className="button" 
                   style={{ backgroundColor: '#4CAF50' }}
                 >
@@ -589,7 +589,7 @@ const MakeQuoteComponent = ({
               ) : (
                 <button 
                   onClick={handleSettleSwap} 
-                  disabled={!isMarketMaker || sendingTx || !balance || BigInt(balance) < settlementBaseAmount || lastSwapStatus === 'settled' || lastSwapStatus === 'claimed'} 
+                  disabled={!isMarketMaker || sendingTx || !balance || BigInt(balance) < settlementBaseAmount || lastSwapStatus === 'settled' || lastSwapStatus === 'claimed' || !lastSwap?.[6]}
                   className="button" 
                   style={{ backgroundColor: '#4CAF50' }}
                 >
