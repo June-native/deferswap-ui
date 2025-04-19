@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { useAccount, useReadContract, useWriteContract, useChainId } from 'wagmi';
-import { bsc as chain } from 'viem/chains';
+// import { bsc as chain } from 'viem/chains';
 import { parseUnits, formatUnits } from 'viem';
 import { erc20Abi } from 'viem';
 import { publicClient } from '../lib/viem';
@@ -191,7 +191,7 @@ const TakeSwapComponent = ({
         address: poolAddress as `0x${string}`,
         abi: poolAbi,
         functionName: 'takeSwap',
-        chain: chain,
+        chain: NETWORK.chain,
         account,
         // TODO: handle slippage
         // args: [parseUnits(debouncedQuoteAmount || '0', quoteTokenMeta.decimals), minBaseAmount],

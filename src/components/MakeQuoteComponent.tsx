@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { useAccount, useReadContract, useWriteContract, useChainId } from 'wagmi';
-import { bsc as chain } from 'viem/chains';
+// import { bsc as chain } from 'viem/chains';
 import { parseUnits, formatUnits } from 'viem';
 import { erc20Abi } from 'viem';
 import { publicClient } from '../lib/viem';
@@ -274,7 +274,7 @@ const MakeQuoteComponent = ({
         functionName: 'setPenaltyRate',
         args: [rate],
         account,
-        chain: chain,
+        chain: NETWORK.chain,
       });
       console.log("Penalty rate set: ", hash);
       // Wait for transaction to be mined
@@ -300,7 +300,7 @@ const MakeQuoteComponent = ({
         functionName: 'setMinQuoteSize',
         args: [size],
         account,
-        chain: chain,
+        chain: NETWORK.chain,
       });
       console.log("Min quote size set: ", hash);
       // Wait for transaction to be mined
@@ -326,7 +326,7 @@ const MakeQuoteComponent = ({
         functionName: 'setSettlementPeriod',
         args: [period],
         account,
-        chain: chain,
+        chain: NETWORK.chain,
       });
       console.log("Settlement period set: ", hash);
       // Wait for transaction to be mined
@@ -351,7 +351,7 @@ const MakeQuoteComponent = ({
         functionName: 'cancelSwap',
         args: [BigInt(swapId)],
         account,
-        chain: chain,
+        chain: NETWORK.chain,
       });
       console.log("Swap cancelled: ", hash);
       
@@ -449,7 +449,7 @@ const MakeQuoteComponent = ({
         functionName: 'approve',
         args: [poolAddress as `0x${string}`, settlementBaseAmount],
         account,
-        chain: chain,
+        chain: NETWORK.chain,
       });
       console.log("Approved for settlement: ", hash);
       await publicClient.waitForTransactionReceipt({ hash });

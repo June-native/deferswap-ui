@@ -2,7 +2,7 @@ import { useEffect, useState, forwardRef, useImperativeHandle } from 'react';
 import { useAccount, useWriteContract } from 'wagmi';
 import { poolAbi } from '../config/abi';
 import { publicClient } from '../lib/viem';
-import { bsc as chain } from 'viem/chains';
+// import { bsc as chain } from 'viem/chains';
 import { parseUnits, formatUnits } from 'viem';
 import { NETWORK } from '../config/constants';
 
