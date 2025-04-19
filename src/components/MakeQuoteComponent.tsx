@@ -5,6 +5,7 @@ import { parseUnits, formatUnits } from 'viem';
 import { erc20Abi } from 'viem';
 import { publicClient } from '../lib/viem';
 import { poolAbi } from '../config/abi';
+import { NETWORK } from '../config/constants';
 
 const MakeQuoteComponent = ({
   poolAddress,
@@ -211,7 +212,7 @@ const MakeQuoteComponent = ({
         functionName: 'approve',
         args: [poolAddress as `0x${string}`, requiredBaseAmount],
         account,
-        chain: chain,
+        chain: NETWORK.chain,
       });
       console.log("Approved: ", hash);
       // Wait for transaction to be mined
@@ -240,7 +241,7 @@ const MakeQuoteComponent = ({
         functionName: 'quote',
         args: [spreadsParsed, sizeTiersParsed],
         account,
-        chain: chain,
+        chain: NETWORK.chain,
       });
       console.log("Quote submitted: ", hash);
       

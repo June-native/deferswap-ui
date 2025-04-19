@@ -4,6 +4,7 @@ import { poolAbi } from '../config/abi';
 import { publicClient } from '../lib/viem';
 import { bsc as chain } from 'viem/chains';
 import { parseUnits, formatUnits } from 'viem';
+import { NETWORK } from '../config/constants';
 
 const UserSwapHistory = ({
   poolAddress,

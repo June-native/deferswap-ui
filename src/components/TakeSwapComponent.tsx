@@ -5,6 +5,7 @@ import { parseUnits, formatUnits } from 'viem';
 import { erc20Abi } from 'viem';
 import { publicClient } from '../lib/viem';
 import { poolAbi } from '../config/abi';
+import { NETWORK } from '../config/constants';
 
 const useDebounce = (value: string, delay: number) => {
   const [debounced, setDebounced] = useState(value);
@@ -90,11 +91,11 @@ const TakeSwapComponent = ({
       setSendingTx(true);
       const hash = await writeApprove({
         address: quoteToken as `0x${string}`,
-        abi: erc20Abi, // replace with your actual ABI
+        abi: erc20Abi,
         functionName: 'approve',
         args: [poolAddress as `0x${string}`, parseUnits(debouncedQuoteAmount || '0', quoteTokenMeta.decimals)],
         account,
-        chain: chain,
+        chain: NETWORK.chain,
       });
       console.log("Approved: ", hash);
     } catch (err) {

@@ -4,6 +4,7 @@ import { poolAbi } from '../config/abi';
 import { publicClient } from '../lib/viem';
 import { bsc as chain } from 'viem/chains';
 import { parseUnits, formatUnits } from 'viem';
+import { NETWORK } from '../config/constants';
 
 const AllQuoteHistory = forwardRef(({
   poolAddress,
@@ -105,7 +106,7 @@ const AllQuoteHistory = forwardRef(({
       .padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
   };
 
-  const explorerLink = `https://bscscan.com/address/${poolAddress}`;
+  const explorerLink = `${NETWORK.explorerUrl}/address/${poolAddress}`;
 
   useImperativeHandle(ref, () => ({
     refresh: () => {

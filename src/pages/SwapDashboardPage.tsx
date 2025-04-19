@@ -8,7 +8,7 @@ import { useEffect, useState } from 'react';
 import { publicClient } from '../lib/viem';
 import { erc20Abi } from 'viem';
 import { poolAbi } from '../config/abi';
-import { bsc as chain } from 'viem/chains';
+import { NETWORK } from '../config/constants';
 
 
 const useQuery = () => new URLSearchParams(useLocation().search);
@@ -82,7 +82,7 @@ const SwapDashboardPage = () => {
         }}
         onClick={() => window.location.href = '/'}
       >
-        🐳 🔸 DeferSwap (Bsc {baseTokenMeta.symbol}/{quoteTokenMeta.symbol})
+        🐳 🔸 DeferSwap ({NETWORK.name} {baseTokenMeta.symbol}/{quoteTokenMeta.symbol})
       </h1>
       <WalletConnectButton />
 
