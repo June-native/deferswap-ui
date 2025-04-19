@@ -56,7 +56,7 @@ const TakeSwapComponent = ({
     args: [address],
   });
 
-  const { data: allowance } = useReadContract({
+  const { data: allowance, refetch: refetchAllowance } = useReadContract({
     address: quoteToken as `0x${string}`,
     abi: erc20Abi,
     functionName: 'allowance',
@@ -98,17 +98,25 @@ const TakeSwapComponent = ({
         chain: NETWORK.chain,
       });
       console.log("Approved: ", hash);
-    } catch (err) {
-      console.error('Swap transaction failed:', err);
-    } finally {
+      
+      // Wait for transaction to be mined
+      await publicClient.waitForTransactionReceipt({ hash });
+      
+      // Refresh allowance
+      await refetchAllowance();
+      
+      // Update approval status
+      const required = parseUnits(debouncedQuoteAmount || '0', quoteTokenMeta.decimals);
       const updatedAllowance = await publicClient.readContract({
         address: quoteToken as `0x${string}`,
         abi: erc20Abi,
         functionName: 'allowance',
         args: [address, poolAddress as `0x${string}`],
       });
-      const required = parseUnits(debouncedQuoteAmount || '0', quoteTokenMeta.decimals);
       setIsApproved(BigInt(updatedAllowance) >= required);
+    } catch (err) {
+      console.error('Approve transaction failed:', err);
+    } finally {
       setSendingTx(false);
     }
   };
