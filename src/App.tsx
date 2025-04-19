@@ -2,6 +2,7 @@ import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import PoolSelectorPage from './pages/PoolSelectorPage';
 import SwapDashboardPage from './pages/SwapDashboardPage';
 import SwapMMPage from './pages/SwapMMPage';
+import DeployPoolPage from './pages/DeployPoolPage';
 
 
 // function App() {
@@ -15,6 +16,7 @@ function App() {
         <Route path="/" element={<PoolSelectorPage />} />
         <Route path="/swap" element={<SwapDashboardPage />} />
         <Route path="/mm" element={<SwapMMPage />} />
+        <Route path="/deploy" element={<DeployPoolPage />} />
       </Routes>
     </BrowserRouter>
   );

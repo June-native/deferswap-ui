@@ -211,6 +211,7 @@ td {
 
 .full-width-button {
   width: 100%;
+  margin: 0.5rem 0rem;
 }
 
 .tiers-container {

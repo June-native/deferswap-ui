@@ -8,6 +8,23 @@ export const POOLS = [
 
 export const factoryAddress = '0xF1d727C658fE68B103373d64bA8AdDE83bf24768';
 
+export const DEFAULT_POOL_CONFIG = {
+  minQuoteSize: 0,
+  settlementPeriod: 60 * 60 * 24 * 1, // 1 days
+  penaltyRate: 500, // 5%
+}
+
+export const PAIRS = {
+  bsc: [
+    {
+      label: 'Bsc DODO/USDC',
+      baseToken: '0x8AC76a51cc950d9822D68b83fE1Ad97B32Cd580d', // USDC
+      quoteToken: '0x67ee3Cb086F8a16f34beE3ca72FAD36F7Db929e2', // DODO
+      priceFeed: '0x87701B15C08687341c2a847ca44eCfBc8d7873E1', // chainlink
+    }
+  ]
+}
+
 // Network Configuration
 export const NETWORK = {
   chain: bsc,
@@ -21,3 +38,4 @@ export const NETWORK = {
   ],
   explorerUrl: 'https://bscscan.com'
 };
+
