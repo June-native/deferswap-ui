@@ -38,11 +38,11 @@ export const NETWORK = {
   chain: bsc,
   name: 'BSC',
   rpcUrls: [
-    'https://binance.llamarpc.com',
     'https://bsc-dataseed1.binance.org',
     'https://bsc-dataseed2.binance.org',
     'https://bsc-dataseed3.binance.org',
-    'https://bsc-dataseed4.binance.org'
+    'https://bsc-dataseed4.binance.org',
+    'https://binance.llamarpc.com',
   ],
   explorerUrl: 'https://bscscan.com'
 };

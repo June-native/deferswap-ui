@@ -140,11 +140,11 @@ const AllQuoteHistory = forwardRef(({
                 const now = Date.now();
                 const expiryMs = Number(s[5]) * 1000;
                 const isExpired = now > expiryMs;
-                const isTaken = s[6];
-                const isSettle = s[7];
-                const isClaimed = s[8];
-                const isCancelled = s[9];
-
+                const isTaken = s[7];
+                const isSettle = s[8];
+                const isClaimed = s[9];
+                const isCancelled = s[10];
+                const price = s[6];
 
                 const status =
                   (isExpired && expiryMs > 0) && !isTaken && !isCancelled ? 'Defaulted' :

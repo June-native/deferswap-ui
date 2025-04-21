@@ -211,7 +211,7 @@ const TakeSwapComponent = ({
   const exceedsMaxQuote = latestSwap && Number(quoteAmountParsed) > (latestSwap ? Number(latestSwap[3]) : Number(0n));
   const lowerThanMinQuote = minQuoteSize &&  Number(quoteAmountParsed) < Number(minQuoteSize);
 
-  const isTaken = latestSwap && latestSwap[5];
+  const isTaken = latestSwap && latestSwap[7];
 
   // check swap
   let isSwapOkay = {

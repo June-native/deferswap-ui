@@ -152,13 +152,17 @@ const UserSwapHistory = ({
                 const now = Date.now();
                 const expiryMs = Number(s[5]) * 1000;
                 const isExpired = now > expiryMs;
-                const isClaimed = s[8];
-                const isCancelled = s[9];
+                const isTaken = s[7];
+                const isSettle = s[8];
+                const isClaimed = s[9];
+                const isCancelled = s[10];
+                const price = s[6];
 
                 const status =
-                  isExpired && !s[7] ? 'Defaulted' :
-                  !s[7] ? 'Pending' :
-                  s[7] && !s[8] ? 'Settled' :
+                  (isExpired && expiryMs > 0) && !isTaken && !isCancelled ? 'Defaulted' :
+                  !isSettle && !isCancelled && !isTaken && !isClaimed ? 'Open' :
+                  !isSettle && !isCancelled && isTaken && !isClaimed ? 'To Fill' :
+                  isSettle && !isCancelled && isTaken && !isClaimed ? 'Filled' :
                   isClaimed ? 'Claimed' :
                   isCancelled ? 'Cancelled' :
                   'unknown';
@@ -180,7 +184,7 @@ const UserSwapHistory = ({
                     <td>
                       <button
                         onClick={() => handleClaim(s.id)}
-                        disabled={isClaimed || isCancelled || claimingSwapId === s.id || (!s[7] && !isExpired)}
+                        disabled={isClaimed || isCancelled || claimingSwapId === s.id || (!s[8] && !isExpired)}
                         className="swap-button"
                       >
                         {

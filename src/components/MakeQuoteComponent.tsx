@@ -131,7 +131,7 @@ const MakeQuoteComponent = ({
   }, [sizeTiers]);
 
   const updateSwapStatus = (swap: any) => {
-    const [taken, settled, claimed, cancelled] = [swap[6], swap[7], swap[8], swap[9]];
+    const [taken, settled, claimed, cancelled] = [swap[7], swap[8], swap[9], swap[10]];
     
     // Determine status based on boolean flags
     let status = 'pending';
@@ -239,7 +239,7 @@ const MakeQuoteComponent = ({
         address: poolAddress as `0x${string}`,
         abi: poolAbi,
         functionName: 'quote',
-        args: [spreadsParsed, sizeTiersParsed],
+        args: [spreadsParsed, sizeTiersParsed, 0n],
         account,
         chain: NETWORK.chain,
       });
@@ -580,7 +580,7 @@ const MakeQuoteComponent = ({
               {!hasSettlementAllowance ? (
                 <button 
                   onClick={handleSettlementApprove} 
-                  disabled={!isMarketMaker || sendingTx || !balance || BigInt(balance) < settlementBaseAmount || !lastSwap?.[6]}
+                  disabled={!isMarketMaker || sendingTx || !balance || BigInt(balance) < settlementBaseAmount || !lastSwap?.[7]}
                   className="button" 
                   style={{ backgroundColor: '#4CAF50' }}
                 >
@@ -589,7 +589,7 @@ const MakeQuoteComponent = ({
               ) : (
                 <button 
                   onClick={handleSettleSwap} 
-                  disabled={!isMarketMaker || sendingTx || !balance || BigInt(balance) < settlementBaseAmount || lastSwapStatus === 'settled' || lastSwapStatus === 'claimed' || !lastSwap?.[6]}
+                  disabled={!isMarketMaker || sendingTx || !balance || BigInt(balance) < settlementBaseAmount || lastSwapStatus === 'settled' || lastSwapStatus === 'claimed' || !lastSwap?.[7]}
                   className="button" 
                   style={{ backgroundColor: '#4CAF50' }}
                 >
