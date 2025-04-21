@@ -27,6 +27,7 @@ const DeployPoolPage = () => {
         abi: factoryAbi,
         functionName: 'createPool',
         args: [
+          pair.flipOraclePrice,
           pair.quoteToken,
           pair.baseToken,
           pair.priceFeed,
@@ -86,7 +87,7 @@ const DeployPoolPage = () => {
 
             <div className="compact-list">
               <div><b>Min Quote Size:</b> {DEFAULT_POOL_CONFIG.minQuoteSize}</div>
-              <div><b>Settlement Period:</b> {DEFAULT_POOL_CONFIG.settlementPeriod / (60 * 60 * 24)} days</div>
+              <div><b>Settlement Period:</b> {DEFAULT_POOL_CONFIG.settlementPeriod / (60 * 60)} hours</div>
               <div><b>Penalty Rate:</b> {DEFAULT_POOL_CONFIG.penaltyRate / 100}%</div>
             </div>
 

@@ -2,7 +2,7 @@ import { useNavigate } from 'react-router-dom';
 import { useState, useEffect } from 'react';
 import { useReadContract } from 'wagmi';
 import { factoryAbi } from '../config/abi';
-import { factoryAddress, POOLS, NETWORK } from '../config/constants';
+import { factoryAddress, POOLS, NETWORK, SKIP_FIRST_X_POOLS } from '../config/constants';
 import { publicClient } from '../lib/viem';
 
 const PoolSelectorPage = () => {
@@ -29,7 +29,7 @@ const PoolSelectorPage = () => {
   // Function to fetch all pools from factory
   const fetchAllFactoryPools = async () => {
     const pools: string[] = [];
-    let index = 1;
+    let index = SKIP_FIRST_X_POOLS;
     
     while (true) {
       const pool = await fetchPoolAtIndex(index);

@@ -6,7 +6,7 @@ export const POOLS = [
   { label: 'DODO/USDC June Test', address: '0x68a84d670d525079016c3754cba0A2975987E9Ca' },
 ];
 
-export const factoryAddress = '0xF1d727C658fE68B103373d64bA8AdDE83bf24768';
+export const factoryAddress = '0x46569bd4cd7D8C7920c87B62176E26B7a2c64907';
 
 export const DEFAULT_POOL_CONFIG = {
   minQuoteSize: 0,
@@ -17,9 +17,17 @@ export const DEFAULT_POOL_CONFIG = {
 export const PAIRS = {
   bsc: [
     {
-      label: 'Bsc DODO/USDC',
+      flipOraclePrice: false,
+      label: 'Bsc - quote:DODO base:USDC',
       baseToken: '0x8AC76a51cc950d9822D68b83fE1Ad97B32Cd580d', // USDC
       quoteToken: '0x67ee3Cb086F8a16f34beE3ca72FAD36F7Db929e2', // DODO
+      priceFeed: '0x87701B15C08687341c2a847ca44eCfBc8d7873E1', // chainlink
+    },
+    {
+      flipOraclePrice: true, 
+      label: 'Bsc - quote:USDC base:DODO',
+      baseToken: '0x67ee3Cb086F8a16f34beE3ca72FAD36F7Db929e2', // DODO
+      quoteToken: '0x8AC76a51cc950d9822D68b83fE1Ad97B32Cd580d', // USDC
       priceFeed: '0x87701B15C08687341c2a847ca44eCfBc8d7873E1', // chainlink
     }
   ]
@@ -38,4 +46,6 @@ export const NETWORK = {
   ],
   explorerUrl: 'https://bscscan.com'
 };
+
+export const SKIP_FIRST_X_POOLS = 0; // Skip the first X pools when fetching from factory
 
