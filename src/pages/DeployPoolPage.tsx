@@ -4,12 +4,15 @@ import { parseUnits } from 'viem';
 import { factoryAbi } from '../config/abi';
 import { factoryAddress, PAIRS, DEFAULT_POOL_CONFIG, NETWORK } from '../config/constants';
 import WalletConnectButton from '../components/WalletConnectButton';
+import { useNavigate } from 'react-router-dom';
+import { publicClient } from '../lib/viem';
 
 const DeployPoolPage = () => {
   const { address } = useAccount();
   const [selectedPair, setSelectedPair] = useState('');
   const [sendingTx, setSendingTx] = useState(false);
   const { writeContractAsync: writeCreatePool } = useWriteContract();
+  const navigate = useNavigate();
 
   // Get available pairs for current network
   const availablePairs = PAIRS[NETWORK.name.toLowerCase()] || [];
@@ -39,6 +42,12 @@ const DeployPoolPage = () => {
         chain: NETWORK.chain,
       });
       console.log("Pool deployed: ", hash);
+
+      // Wait for transaction to be mined
+      await publicClient.waitForTransactionReceipt({ hash });
+      
+      // Navigate back to pool select page
+      navigate('/');
     } catch (err) {
       console.error('Pool deployment failed:', err);
     } finally {
