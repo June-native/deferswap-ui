@@ -226,10 +226,12 @@ const TakeSwapComponent = ({
     isSwapOkay.reason = "Enter Amount to Swap";
   }
 
-  if (Number(quoteAmount) > balance) {
+  if (Number(quoteAmountParsed) > balance) {
     isSwapOkay.status = false;
     isSwapOkay.reason = "Swap Amount Exceeds Balance";
   }
+
+  console.log(balance, quoteAmountParsed);
 
   if (isCancelled) {
     isSwapOkay.status = false;
