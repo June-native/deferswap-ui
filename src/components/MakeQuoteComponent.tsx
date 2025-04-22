@@ -557,7 +557,7 @@ const MakeQuoteComponent = ({
                 disabled={!isMarketMaker}
               />
               <button onClick={handleCancelSwap} 
-                disabled={!isMarketMaker || sendingTx || (swapCounter && BigInt(swapId) >= BigInt(String(swapCounter))) || lastSwapStatus === 'settled' || lastSwapStatus === 'taken' || lastSwapStatus === 'claimed' || lastSwapStatus === 'cancelled'} 
+                disabled={!swapId || !swapCounter || !isMarketMaker || sendingTx || (swapCounter && BigInt(swapId) >= BigInt(String(swapCounter))) || lastSwapStatus === 'settled' || lastSwapStatus === 'taken' || lastSwapStatus === 'claimed' || lastSwapStatus === 'cancelled'} 
                 className="button" 
                 style={{ backgroundColor: '#ff4444' }}>
                 Cancel
