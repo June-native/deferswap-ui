@@ -130,9 +130,9 @@ const AllQuoteHistory = forwardRef(({
                 <th>{quoteTokenMeta.symbol}</th>
                 <th>{baseTokenMeta.symbol}</th>
                 <th>Collateral</th>
+                <th>Price</th>
                 <th>Expiry</th>
                 <th>Status</th>
-                <th>Claimed?</th>
               </tr>
             </thead>
             <tbody>
@@ -161,14 +161,19 @@ const AllQuoteHistory = forwardRef(({
                     <td>{
                       isTaken 
                         ? Number(formatUnits(s[1], quoteTokenMeta.decimals)).toFixed(3)
-                        : <><span>{Number(formatUnits(s[3], quoteTokenMeta.decimals)).toFixed(3)}</span><br/><span style={{ fontSize: '0.85em', color: '#888' }}>MAX</span></>
+                        : <><span>{Number(formatUnits(s[3], quoteTokenMeta.decimals)).toFixed(3)}</span><br/><span style={{ fontSize: '0.85em', color: '#888' }}>up to</span></>
                     }</td>
-                    <td>{Number(formatUnits(s[2], baseTokenMeta.decimals)).toFixed(3)}</td>
+                    <td>{
+                      isTaken
+                        ? Number(formatUnits(s[2], baseTokenMeta.decimals)).toFixed(3)
+                        : '-'
+                    }</td>
                     <td>{
                       isTaken
                         ? Number(formatUnits(s[4], baseTokenMeta.decimals)).toFixed(3)
-                        : <><span>{Number(formatUnits(s[4], baseTokenMeta.decimals)).toFixed(3)}</span><br/><span style={{ fontSize: '0.85em', color: '#888' }}>MAX</span></>
+                        : <><span>{Number(formatUnits(s[4], baseTokenMeta.decimals)).toFixed(3)}</span><br/><span style={{ fontSize: '0.85em', color: '#888' }}>up to</span></>
                     }</td>
+                    <td><><span>{price === 0n ? 'Follow Oracle' : Number(formatUnits(price, baseTokenMeta.decimals)).toFixed(3)}</span><br/><span style={{ fontSize: '0.85em', color: '#888' }}>{baseTokenMeta.symbol} per {quoteTokenMeta.symbol}</span></></td>
                     <td>
                       {expiryMs > 0 ? new Date(expiryMs).toLocaleString() : '-'}
                       <br />
@@ -177,7 +182,6 @@ const AllQuoteHistory = forwardRef(({
                       </span>
                     </td>
                     <td>{status}</td>
-                    <td>{isClaimed ? 'Yes' : 'No'}</td>
                   </tr>
                 );
               })}

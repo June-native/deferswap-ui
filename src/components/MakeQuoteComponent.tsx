@@ -35,6 +35,9 @@ const MakeQuoteComponent = ({
   const [lastSwapStatus, setLastSwapStatus] = useState<string>('');
   const [canSubmitQuote, setCanSubmitQuote] = useState<boolean>(false);
   const [sizeTiersValid, setSizeTiersValid] = useState<boolean>(true);
+  const [useLimitPrice, setUseLimitPrice] = useState<boolean>(false);
+  const [limitPrice, setLimitPrice] = useState<string>('');
+  const [limitPriceValid, setLimitPriceValid] = useState<boolean>(true);
   const { address: account } = useAccount();
   const chainId = useChainId();
 
@@ -129,6 +132,15 @@ const MakeQuoteComponent = ({
     });
     setSizeTiersValid(isValid);
   }, [sizeTiers]);
+
+  useEffect(() => {
+    if (oraclePrice && useLimitPrice && limitPrice) {
+      const limitPriceBigInt = parseUnits(limitPrice, 18);
+      setLimitPriceValid(limitPriceBigInt < oraclePrice);
+    } else {
+      setLimitPriceValid(true);
+    }
+  }, [oraclePrice, limitPrice, useLimitPrice]);
 
   const updateSwapStatus = (swap: any) => {
     const [taken, settled, claimed, cancelled] = [swap[7], swap[8], swap[9], swap[10]];
@@ -233,13 +245,14 @@ const MakeQuoteComponent = ({
         parseUnits(amount || '0', quoteTokenMeta.decimals));
       const spreadsParsed = spreads.map(amount => 
         BigInt(Math.floor(parseFloat(amount) * 100)));
-      console.log(sizeTiersParsed, spreadsParsed);
+      const limitPriceParsed = useLimitPrice ? parseUnits(limitPrice, baseTokenMeta.decimals) : 0n;
+      console.log(sizeTiersParsed, spreadsParsed, limitPriceParsed);
 
       const hash = await writeQuote({
         address: poolAddress as `0x${string}`,
         abi: poolAbi,
         functionName: 'quote',
-        args: [spreadsParsed, sizeTiersParsed, 0n],
+        args: [spreadsParsed, sizeTiersParsed, limitPriceParsed],
         account,
         chain: NETWORK.chain,
       });
@@ -524,6 +537,32 @@ const MakeQuoteComponent = ({
               </button>
             </div>
             <div className="wallet-info">
+              <input
+                type="checkbox"
+                id="useLimitPrice"
+                checked={useLimitPrice}
+                onChange={(e) => {
+                  setUseLimitPrice(e.target.checked);
+                  if (!e.target.checked) {
+                    setLimitPrice('');
+                  }
+                }}
+                disabled={!isMarketMaker}
+              />
+              <label htmlFor="useLimitPrice">
+                <b>Use Limit Price: </b>
+              </label>
+              <input
+                type="number"
+                value={limitPrice}
+                onChange={(e) => setLimitPrice(e.target.value)}
+                placeholder="Enter limit price"
+                disabled={!useLimitPrice || !isMarketMaker}
+                className="swap-input"
+              />
+              <label>{baseTokenMeta.symbol} per {quoteTokenMeta.symbol}</label>
+            </div>
+            <div className="wallet-info">
               <div><b>Oracle Price:</b> {oraclePrice ? formatUnits(oraclePrice, baseTokenMeta.decimals) : 'Loading...'} {baseTokenMeta.symbol} per {quoteTokenMeta.symbol}</div>
               <div><b>Required Collateral:</b> {formatUnits(requiredBaseAmount, baseTokenMeta.decimals)} {baseTokenMeta.symbol} (with 5% buffer)</div>
               <div><b>Wallet Balance:</b> {balance ? formatUnits(balance, baseTokenMeta.decimals) : 0} {baseTokenMeta.symbol}</div>
@@ -532,13 +571,14 @@ const MakeQuoteComponent = ({
               {!hasEnoughBalance && <div style={{ color: '#ff4444' }}>Insufficient balance for collateral</div>}
               {swapCounter != 0 && !canSubmitQuote && lastSwapStatus && <div style={{ color: '#ff4444' }}>Cannot submit quote until last swap is settled, claimed, or cancelled</div>}
               {!sizeTiersValid && <div style={{ color: '#ff4444' }}>Size tiers must be in ascending order</div>}
+              {useLimitPrice && !limitPriceValid && <div style={{ color: '#ff4444' }}>Limit order price should be lower than oracle price</div>}
             </div>
             {!hasEnoughAllowance ? (
               <button onClick={handleApprove} disabled={!isMarketMaker || sendingTx || !hasEnoughBalance} className="button full-width-button">
                 Approve {baseTokenMeta.symbol}
               </button>
             ) : (
-              <button onClick={handleQuote} disabled={!isMarketMaker || sendingTx || !hasEnoughBalance || (!canSubmitQuote && swapCounter != 0) || !sizeTiersValid} className="button full-width-button">
+              <button onClick={handleQuote} disabled={!isMarketMaker || sendingTx || !hasEnoughBalance || (!canSubmitQuote && swapCounter != 0) || !sizeTiersValid || (useLimitPrice && !limitPriceValid)} className="button full-width-button">
                 Submit Quotes
               </button>
             )}

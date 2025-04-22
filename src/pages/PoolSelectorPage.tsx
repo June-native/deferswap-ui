@@ -115,7 +115,7 @@ const PoolSelectorPage = () => {
           onClick={() => navigate(`/swap?pool=${selected}`)}
           className="swap-button full-width-button"
           style={{ margin: '0rem 0rem 0.5rem 0rem' }}
-          disabled={loading}
+          disabled={loading || allPools.length === 0}
         >
           Swap
         </button>
@@ -123,7 +123,7 @@ const PoolSelectorPage = () => {
         <button
           onClick={() => navigate(`/mm?pool=${selected}`)}
           className="swap-button full-width-button"
-          disabled={loading}
+          disabled={loading || allPools.length === 0}
           style={{ margin: '0rem 0rem 0.5rem 0rem' }}
         >
           Quote Spread Order

@@ -305,3 +305,27 @@ td {
   border-radius: 4px;
   margin: 10px 0;
 }
+
+/* Checkbox styles */
+input[type="checkbox"] {
+  margin: 0rem;
+  margin-right: 0.5rem;
+  width: auto;
+  height: 100%;
+  cursor: pointer;
+}
+
+input[type="checkbox"]:disabled {
+  cursor: not-allowed;
+  opacity: 0.7;
+}
+
+input[type="checkbox"] + label {
+  cursor: pointer;
+  user-select: none;
+}
+
+input[type="checkbox"]:disabled + label {
+  cursor: not-allowed;
+  opacity: 0.7;
+}
