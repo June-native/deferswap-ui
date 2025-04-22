@@ -70,6 +70,13 @@ const PoolSelectorPage = () => {
     })),
   ];
 
+  // Ensure we have a valid selected pool
+  useEffect(() => {
+    if (!loading && allPools.length > 0 && !selected) {
+      setSelected(allPools[0].address);
+    }
+  }, [loading, allPools, selected]);
+
   return (
     <div style={{ maxWidth: '800px', margin: '0 auto', padding: '2rem', position: 'relative' }}>
     <h1 
