@@ -213,6 +213,8 @@ const TakeSwapComponent = ({
 
   const isTaken = latestSwap && latestSwap[7];
 
+  const isCancelled = latestSwap && latestSwap[10];
+
   // check swap
   let isSwapOkay = {
     status: true,
@@ -227,6 +229,11 @@ const TakeSwapComponent = ({
   if (Number(quoteAmount) > balance) {
     isSwapOkay.status = false;
     isSwapOkay.reason = "Swap Amount Exceeds Balance";
+  }
+
+  if (isCancelled) {
+    isSwapOkay.status = false;
+    isSwapOkay.reason = "Latest Quote is Not Available";
   }
 
   if (isTaken) {
