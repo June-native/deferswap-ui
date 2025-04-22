@@ -2,6 +2,7 @@ import { bsc, mainnet } from 'wagmi/chains';
 
 // predefined pool configs
 export const POOLS = [
+  { label: 'June Test - USDC/DODO (reversed)', address: '0x15704f816F369C0f94274c7B3613eb8ACfe66e78' },
   // { label: 'June Test - Reverse Pool', address: '0x2576cd8a53411c5dbB5B5Df4390A3b318Cca2323' },
   // { label: 'DODO/USDC Halo', address: '0xB6DaAaa477aCEAC7E45d42420c752AFF3013D058' },
   // { label: 'DODO/USDC June Test New', address: '0x0863E0f715b16fe3E56DBcD7F7c0d4C68973e427' },
@@ -10,7 +11,7 @@ export const POOLS = [
 
 // factory configs
 export const factoryAddress = '0xa2087A11C04Bd577571278E5397083082e8E3Da2';
-export const SKIP_FIRST_X_POOLS = 0; // Skip the first X pools when fetching from factory
+export const SKIP_FIRST_X_POOLS = 1; // Skip the first X pools when fetching from factory
 export const DEFAULT_POOL_CONFIG = {
   minQuoteSize: 0,
   settlementPeriod: 60 * 60 * 24 * 1, // 1 days

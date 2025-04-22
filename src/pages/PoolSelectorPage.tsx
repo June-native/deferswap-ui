@@ -117,7 +117,7 @@ const PoolSelectorPage = () => {
           style={{ margin: '0rem 0rem 0.5rem 0rem' }}
           disabled={loading || allPools.length === 0}
         >
-          Swap
+          Take Swap
         </button>
 
         <button
@@ -126,7 +126,7 @@ const PoolSelectorPage = () => {
           disabled={loading || allPools.length === 0}
           style={{ margin: '0rem 0rem 0.5rem 0rem' }}
         >
-          Quote Spread Order
+          Make Quote
         </button>
 
         <button

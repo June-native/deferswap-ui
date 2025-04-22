@@ -197,12 +197,13 @@ const MakeQuoteComponent = ({
   useEffect(() => {
     if (sizeTiers.length > 0 && oraclePrice && penaltyRateData) {
       const lastSizeTier = parseUnits(sizeTiers[sizeTiers.length - 1] || '0', quoteTokenMeta.decimals);
-      const required = (lastSizeTier * oraclePrice * BigInt(String(penaltyRateData))) / 10000n;
-      const withBuffer = (required * 105n) / 100n; // Add 5% buffer
+      const price = useLimitPrice && limitPrice ? parseUnits(limitPrice, baseTokenMeta.decimals) : oraclePrice;
+      const required = (lastSizeTier * price * BigInt(String(penaltyRateData))) / 10000n;
+      const withBuffer = (required * 1001n) / 1000n; // Add 0.1% buffer
       const withBufferParsed = formatUnits(withBuffer, baseTokenMeta.decimals);
       setRequiredBaseAmount(BigInt(Math.floor(parseFloat(withBufferParsed))));
     }
-  }, [sizeTiers, oraclePrice, penaltyRateData, quoteTokenMeta.decimals]);
+  }, [sizeTiers, oraclePrice, penaltyRateData, quoteTokenMeta.decimals, useLimitPrice, limitPrice, baseTokenMeta.decimals]);
 
   const hasEnoughBalance = balance && BigInt(balance) >= requiredBaseAmount;
   const hasEnoughAllowance = allowance && requiredBaseAmount <= BigInt(allowance);
@@ -564,7 +565,7 @@ const MakeQuoteComponent = ({
             </div>
             <div className="wallet-info">
               <div><b>Oracle Price:</b> {oraclePrice ? formatUnits(oraclePrice, baseTokenMeta.decimals) : 'Loading...'} {baseTokenMeta.symbol} per {quoteTokenMeta.symbol}</div>
-              <div><b>Required Collateral:</b> {formatUnits(requiredBaseAmount, baseTokenMeta.decimals)} {baseTokenMeta.symbol} (with 5% buffer)</div>
+              <div><b>Required Collateral:</b> {formatUnits(requiredBaseAmount, baseTokenMeta.decimals)} {baseTokenMeta.symbol} (with 0.1% buffer)</div>
               <div><b>Wallet Balance:</b> {balance ? formatUnits(balance, baseTokenMeta.decimals) : 0} {baseTokenMeta.symbol}</div>
               <div><b>Last Swap Status:</b> {Number(swapCounter) > 0 ? lastSwapStatus : 'No Swaps Yet'}</div>
               <div><b>Warnings:</b></div>
