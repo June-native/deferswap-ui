@@ -119,7 +119,7 @@ const PoolSelectorPage = () => {
           disabled={loading}
           style={{ margin: '0rem 0rem 0.5rem 0rem' }}
         >
-          PMM Quote
+          Quote Spread Order
         </button>
 
         <button
