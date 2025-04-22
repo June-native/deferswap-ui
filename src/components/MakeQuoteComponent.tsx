@@ -188,7 +188,7 @@ const MakeQuoteComponent = ({
       const required = (lastSizeTier * oraclePrice * BigInt(String(penaltyRateData))) / 10000n;
       const withBuffer = (required * 105n) / 100n; // Add 5% buffer
       const withBufferParsed = formatUnits(withBuffer, baseTokenMeta.decimals);
-      setRequiredBaseAmount(BigInt(withBufferParsed));
+      setRequiredBaseAmount(BigInt(Math.floor(parseFloat(withBufferParsed))));
     }
   }, [sizeTiers, oraclePrice, penaltyRateData, quoteTokenMeta.decimals]);
 
