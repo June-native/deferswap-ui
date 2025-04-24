@@ -114,8 +114,8 @@ const MakeQuoteComponent = ({
       console.log('Oracle price data:', oraclePriceData);
       try {
         const price = BigInt(String(oraclePriceData));
-        console.log('Parsed oracle price:', price);
         setOraclePrice(price);
+        console.log('Parsed oracle price:', price, BigInt(baseTokenMeta.decimals), BigInt(quoteTokenMeta.decimals));
       } catch (err) {
         console.error('Error parsing oracle price:', err);
       }
@@ -134,12 +134,15 @@ const MakeQuoteComponent = ({
   }, [sizeTiers]);
 
   useEffect(() => {
-    if (oraclePrice && useLimitPrice && limitPrice) {
-      const limitPriceBigInt = parseUnits(limitPrice, 18);
-      setLimitPriceValid(limitPriceBigInt < oraclePrice);
-    } else {
-      setLimitPriceValid(true);
-    }
+    setLimitPriceValid(true);
+    // disable limit price check for now
+    // if (oraclePrice && useLimitPrice && limitPrice) {
+    //   const limitPriceBigInt = parseUnits(limitPrice, 18);
+    //   console.log(limitPriceBigInt, oraclePrice);
+    //   setLimitPriceValid(limitPriceBigInt < oraclePrice);
+    // } else {
+    //   setLimitPriceValid(true);
+    // }
   }, [oraclePrice, limitPrice, useLimitPrice]);
 
   const updateSwapStatus = (swap: any) => {
@@ -197,11 +200,13 @@ const MakeQuoteComponent = ({
   useEffect(() => {
     if (sizeTiers.length > 0 && oraclePrice && penaltyRateData) {
       const lastSizeTier = parseUnits(sizeTiers[sizeTiers.length - 1] || '0', quoteTokenMeta.decimals);
-      const price = useLimitPrice && limitPrice ? parseUnits(limitPrice, baseTokenMeta.decimals) : oraclePrice;
-      const required = (lastSizeTier * price * BigInt(String(penaltyRateData))) / 10000n;
+      const price = useLimitPrice && limitPrice ? parseUnits(limitPrice, 18) : oraclePrice;
+      const required = (lastSizeTier * price * BigInt(String(penaltyRateData))) / 10000n / (10n ** BigInt(18));
       const withBuffer = (required * 1001n) / 1000n; // Add 0.1% buffer
-      const withBufferParsed = formatUnits(withBuffer, baseTokenMeta.decimals);
-      setRequiredBaseAmount(BigInt(Math.floor(parseFloat(withBufferParsed))));
+      const withBufferParsed = withBuffer * (10n ** BigInt(baseTokenMeta.decimals)) / (10n ** BigInt(quoteTokenMeta.decimals));
+      const withBufferParsedString = formatUnits(withBufferParsed, 0);
+      console.log(price, lastSizeTier, required, withBufferParsed);
+      setRequiredBaseAmount(BigInt(Math.floor(parseFloat(withBufferParsedString))));
     }
   }, [sizeTiers, oraclePrice, penaltyRateData, quoteTokenMeta.decimals, useLimitPrice, limitPrice, baseTokenMeta.decimals]);
 
@@ -246,7 +251,7 @@ const MakeQuoteComponent = ({
         parseUnits(amount || '0', quoteTokenMeta.decimals));
       const spreadsParsed = spreads.map(amount => 
         BigInt(Math.floor(parseFloat(amount) * 100)));
-      const limitPriceParsed = useLimitPrice ? parseUnits(limitPrice, baseTokenMeta.decimals) : 0n;
+      const limitPriceParsed = useLimitPrice ? parseUnits(limitPrice, 18) : 0n;
       console.log(sizeTiersParsed, spreadsParsed, limitPriceParsed);
 
       const hash = await writeQuote({
@@ -564,7 +569,7 @@ const MakeQuoteComponent = ({
               <label>{baseTokenMeta.symbol} per {quoteTokenMeta.symbol}</label>
             </div>
             <div className="wallet-info">
-              <div><b>Oracle Price:</b> {oraclePrice ? formatUnits(oraclePrice, baseTokenMeta.decimals) : 'Loading...'} {baseTokenMeta.symbol} per {quoteTokenMeta.symbol}</div>
+              <div><b>Oracle Price:</b> {oraclePrice ? formatUnits(oraclePrice, 18) : 'Loading...'} {baseTokenMeta.symbol} per {quoteTokenMeta.symbol}</div>
               <div><b>Required Collateral:</b> {formatUnits(requiredBaseAmount, baseTokenMeta.decimals)} {baseTokenMeta.symbol} (with 0.1% buffer)</div>
               <div><b>Wallet Balance:</b> {balance ? formatUnits(balance, baseTokenMeta.decimals) : 0} {baseTokenMeta.symbol}</div>
               <div><b>Last Swap Status:</b> {Number(swapCounter) > 0 ? lastSwapStatus : 'No Swaps Yet'}</div>

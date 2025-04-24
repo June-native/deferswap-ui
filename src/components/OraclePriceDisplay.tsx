@@ -25,7 +25,7 @@ const OraclePriceDisplay = ({
   useEffect(() => {
     if (rawOraclePrice) {
       console.log(`Oracle price raw: ${rawOraclePrice}`);
-      setOraclePrice(formatUnits(BigInt(rawOraclePrice as string || 0), quoteTokenMeta.decimals));
+      setOraclePrice(formatUnits(BigInt(rawOraclePrice as string || 0), 18));
     }
   }, [rawOraclePrice]);
 

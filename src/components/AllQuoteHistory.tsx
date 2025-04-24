@@ -160,20 +160,20 @@ const AllQuoteHistory = forwardRef(({
                     <td>{s.id}</td>
                     <td>{
                       isTaken 
-                        ? Number(formatUnits(s[1], quoteTokenMeta.decimals)).toFixed(3)
-                        : <><span>{Number(formatUnits(s[3], quoteTokenMeta.decimals)).toFixed(3)}</span><br/><span style={{ fontSize: '0.85em', color: '#888' }}>up to</span></>
+                        ? Number(formatUnits(s[1], quoteTokenMeta.decimals)).toFixed(5)
+                        : <><span>{Number(formatUnits(s[3], quoteTokenMeta.decimals)).toFixed(5)}</span><br/><span style={{ fontSize: '0.85em', color: '#888' }}>up to</span></>
                     }</td>
                     <td>{
                       isTaken
-                        ? Number(formatUnits(s[2], baseTokenMeta.decimals)).toFixed(3)
+                        ? Number(formatUnits(s[2], baseTokenMeta.decimals)).toFixed(5)
                         : '-'
                     }</td>
                     <td>{
                       isTaken
-                        ? Number(formatUnits(s[4], baseTokenMeta.decimals)).toFixed(3)
-                        : <><span>{Number(formatUnits(s[4], baseTokenMeta.decimals)).toFixed(3)}</span><br/><span style={{ fontSize: '0.85em', color: '#888' }}>up to</span></>
+                        ? Number(formatUnits(s[4], baseTokenMeta.decimals)).toFixed(5)
+                        : <><span>{Number(formatUnits(s[4], baseTokenMeta.decimals)).toFixed(5)}</span><br/><span style={{ fontSize: '0.85em', color: '#888' }}>up to</span></>
                     }</td>
-                    <td><><span>{price === 0n ? 'Follow Oracle' : Number(formatUnits(price, baseTokenMeta.decimals)).toFixed(3)}</span><br/><span style={{ fontSize: '0.85em', color: '#888' }}>{baseTokenMeta.symbol} per {quoteTokenMeta.symbol}</span></></td>
+                    <td><><span>{price === 0n ? 'Follow Oracle' : Number(formatUnits(price, 18)).toFixed(5)}</span><br/><span style={{ fontSize: '0.85em', color: '#888' }}>{baseTokenMeta.symbol} per {quoteTokenMeta.symbol}</span></></td>
                     <td>
                       {expiryMs > 0 ? new Date(expiryMs).toLocaleString() : '-'}
                       <br />

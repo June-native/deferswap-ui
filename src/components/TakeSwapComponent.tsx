@@ -175,7 +175,8 @@ const TakeSwapComponent = ({
   useEffect(() => {
     if (priceWithSpread) {
       // setExpectedBaseAmount(formatUnits(priceWithSpread, quoteTokenMeta.decimals));
-      setExpectedBaseAmount(formatUnits(priceWithSpread as bigint, quoteTokenMeta.decimals));
+      console.log(priceWithSpread);
+      setExpectedBaseAmount(formatUnits(priceWithSpread as bigint, 18));
     }
   }, [priceWithSpread]);
 
