@@ -7,7 +7,7 @@ export const POOLS = [
 
 // factory configs
 export const factoryAddress = '0xd9cc6421b44cd0b0a6cc8a61fa2aff0ea2cef0a7';
-export const SKIP_FIRST_X_POOLS = 0; // Skip the first X pools when fetching from factory
+export const SKIP_FIRST_X_POOLS = 3; // Skip the first X pools when fetching from factory
 export const DEFAULT_POOL_CONFIG = {
   minQuoteSize: 0,
   settlementPeriod: 60 * 60 * 24 * 1, // 1 days
