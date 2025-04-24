@@ -60,16 +60,16 @@ const PoolSelectorPage = () => {
       label: `Public Pool 0x...${address.slice(-6)}`,
       address,
       isFactory: true,
-      index: factoryPools.length - 1 - index, // Reverse the index for descending order
+      index: index, // factoryPools.length - 1 - index, // Reverse the index for descending order
     })).sort((a, b) => b.index - a.index), // Sort by index in descending order
     // Pre-configured pools
     ...POOLS.map(pool => ({
       ...pool,
       isFactory: false,
-      index: -1, // Pre-configured pools come after factory pools
+      index: -99, // Pre-configured pools come after factory pools
     })),
   ];
-
+  console.log(allPools);
   // Ensure we have a valid selected pool
   useEffect(() => {
     if (!loading && allPools.length > 0 && !selected) {
