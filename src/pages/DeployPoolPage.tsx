@@ -66,7 +66,7 @@ const DeployPoolPage = () => {
         }}
         onClick={() => window.location.href = '/'}
       >
-        🐳 🔸 DeferSwap ({NETWORK.name})
+        🐳 🔹 DeferSwap ({NETWORK.name})
       </h1>
     <WalletConnectButton />
     <div className="main-container">

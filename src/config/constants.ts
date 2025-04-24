@@ -1,54 +1,63 @@
-import { bsc, mainnet } from 'wagmi/chains';
+import { mainnet } from 'wagmi/chains';
 
 // predefined pool configs
 export const POOLS = [
-  { label: 'June Test - DODO/USDC', address: '0xe840f917D573a3E2d3202c21A3f9c282F84f67BF' },
-  { label: 'June Test - USDC/DODO (reversed)', address: '0x15704f816F369C0f94274c7B3613eb8ACfe66e78' },
-  // { label: 'June Test - Reverse Pool', address: '0x2576cd8a53411c5dbB5B5Df4390A3b318Cca2323' },
-  // { label: 'DODO/USDC Halo', address: '0xB6DaAaa477aCEAC7E45d42420c752AFF3013D058' },
-  // { label: 'DODO/USDC June Test New', address: '0x0863E0f715b16fe3E56DBcD7F7c0d4C68973e427' },
-  // { label: 'DODO/USDC June Test', address: '0x68a84d670d525079016c3754cba0A2975987E9Ca' },
+
 ];
 
 // factory configs
-export const factoryAddress = '0xa2087A11C04Bd577571278E5397083082e8E3Da2';
-export const SKIP_FIRST_X_POOLS = 2; // Skip the first X pools when fetching from factory
+export const factoryAddress = '0xd9cc6421b44cd0b0a6cc8a61fa2aff0ea2cef0a7';
+export const SKIP_FIRST_X_POOLS = 0; // Skip the first X pools when fetching from factory
 export const DEFAULT_POOL_CONFIG = {
   minQuoteSize: 0,
   settlementPeriod: 60 * 60 * 24 * 1, // 1 days
   penaltyRate: 500, // 5%
 }
 export const PAIRS = {
-  bsc: [
+  ethereum: [
     {
       flipOraclePrice: false,
-      label: 'Bsc - quote:DODO base:USDC',
-      baseToken: '0x8AC76a51cc950d9822D68b83fE1Ad97B32Cd580d', // USDC
-      quoteToken: '0x67ee3Cb086F8a16f34beE3ca72FAD36F7Db929e2', // DODO
-      priceFeed: '0x87701B15C08687341c2a847ca44eCfBc8d7873E1', // chainlink
+      label: 'ETH - quote:FHE base:USDT',
+      baseToken: '0xdAC17F958D2ee523a2206206994597C13D831ec7', // USDT
+      quoteToken: '0xd55C9fB62E176a8Eb6968f32958FeFDD0962727E', // FHE
+      priceFeed: '0x5f4eC3Df9cbd43714FE2740f5E3616155c5b8419', // mock ETH/USD Chainlink
+    },
+    {
+      flipOraclePrice: true,
+      label: 'ETH - quote:USDT base:FHE',
+      baseToken: '0xd55C9fB62E176a8Eb6968f32958FeFDD0962727E', // FHE
+      quoteToken: '0xdAC17F958D2ee523a2206206994597C13D831ec7', // USDT
+      priceFeed: '0x5f4eC3Df9cbd43714FE2740f5E3616155c5b8419', // mock ETH/USD Chainlink
+    },
+    {
+      flipOraclePrice: false,
+      label: 'ETH - quote:WETH base:USDC',
+      baseToken: '0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48', // USDC
+      quoteToken: '0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2', // WETH
+      priceFeed: '0x5f4eC3Df9cbd43714FE2740f5E3616155c5b8419', // ETH/USD Chainlink
     },
     {
       flipOraclePrice: true, 
-      label: 'Bsc - quote:USDC base:DODO',
-      baseToken: '0x67ee3Cb086F8a16f34beE3ca72FAD36F7Db929e2', // DODO
-      quoteToken: '0x8AC76a51cc950d9822D68b83fE1Ad97B32Cd580d', // USDC
-      priceFeed: '0x87701B15C08687341c2a847ca44eCfBc8d7873E1', // chainlink
-    }
+      label: 'ETH - quote:USDC base:WETH',
+      baseToken: '0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2', // WETH
+      quoteToken: '0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48', // USDC
+      priceFeed: '0x5f4eC3Df9cbd43714FE2740f5E3616155c5b8419', // ETH/USD Chainlink
+    },
   ]
 }
 
 // network configs
 export const NETWORK = {
-  chain: bsc,
-  name: 'BSC',
+  chain: mainnet,
+  name: 'Ethereum',
   rpcUrls: [
-    'https://bsc-dataseed1.binance.org',
-    'https://bsc-dataseed2.binance.org',
-    'https://bsc-dataseed3.binance.org',
-    'https://bsc-dataseed4.binance.org',
-    'https://binance.llamarpc.com',
+    'https://eth.llamarpc.com',
+    'https://rpc.ankr.com/eth',
+    'https://eth-mainnet.public.blastapi.io',
+    'https://ethereum.publicnode.com',
+    'https://1rpc.io/eth',
   ],
-  explorerUrl: 'https://bscscan.com'
+  explorerUrl: 'https://etherscan.io'
 };
 
 

@@ -88,8 +88,9 @@ const PoolSelectorPage = () => {
           textAlign: 'center',
           width: '100%',
         }}
+        onClick={() => window.location.href = '/'}
       >
-        🐳 🔸 DeferSwap
+        🐳 🔹 DeferSwap
       </h1>
     <div className="main-container" style={{ maxWidth: '400px', margin: '0 auto', padding: '2rem', marginTop: '2rem' }}>
         <h2 className="oracle-title">Select a Pool to Start</h2>

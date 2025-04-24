@@ -82,7 +82,7 @@ const SwapDashboardPage = () => {
         }}
         onClick={() => window.location.href = '/'}
       >
-        🐳 🔸 DeferSwap ({NETWORK.name} {baseTokenMeta.symbol}/{quoteTokenMeta.symbol})
+        🐳 🔹 DeferSwap ({NETWORK.name} {baseTokenMeta.symbol}/{quoteTokenMeta.symbol})
       </h1>
       <WalletConnectButton />
 
