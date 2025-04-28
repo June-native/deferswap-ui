@@ -11,6 +11,10 @@ const DeployPoolLimitPage = () => {
   const { address } = useAccount();
   const [selectedPair, setSelectedPair] = useState('');
   const [sendingTx, setSendingTx] = useState(false);
+  const [useCustomParams, setUseCustomParams] = useState(false);
+  const [baseToken, setBaseToken] = useState('');
+  const [quoteToken, setQuoteToken] = useState('');
+  const [collateralIsBase, setCollateralIsBase] = useState(true);
   const { writeContractAsync: writeCreatePool } = useWriteContract();
   const navigate = useNavigate();
 
@@ -18,25 +22,38 @@ const DeployPoolLimitPage = () => {
   const availablePairs = PAIRS[NETWORK.name.toLowerCase()] || [];
 
   const handleDeploy = async () => {
-    if (!address || !selectedPair) return;
+    if (!address) return;
+    if (!useCustomParams && !selectedPair) return;
+    if (useCustomParams && (!baseToken || !quoteToken)) return;
 
     try {
       setSendingTx(true);
-      const pair = availablePairs.find(p => p.label === selectedPair);
-      if (!pair) throw new Error('Invalid pair selected');
+      let quoteTokenAddress, baseTokenAddress, collateralIsBaseValue, collateralRateLimit;
 
-      console.log(pair, address);
+      if (useCustomParams) {
+        quoteTokenAddress = quoteToken;
+        baseTokenAddress = baseToken;
+        collateralIsBaseValue = collateralIsBase;
+        collateralRateLimit = 2000; // 20% default collateral rate
+      } else {
+        const pair = availablePairs.find(p => p.label === selectedPair);
+        if (!pair) throw new Error('Invalid pair selected');
+        quoteTokenAddress = pair.quoteToken;
+        baseTokenAddress = pair.baseToken;
+        collateralIsBaseValue = pair.collateralIsBase;
+        collateralRateLimit = pair.collateralRateLimit;
+      }
 
       const hash = await writeCreatePool({
         address: factoryLimitOrder as `0x${string}`,
         abi: factoryAbi,
         functionName: 'createPool',
         args: [
-          pair.quoteToken,
-          pair.baseToken,
+          quoteTokenAddress,
+          baseTokenAddress,
           address,
-          pair.collateralIsBase,
-          pair.collateralRateLimit,
+          collateralIsBaseValue,
+          collateralRateLimit,
         ],
         account: address,
         chain: NETWORK.chain,
@@ -74,32 +91,103 @@ const DeployPoolLimitPage = () => {
         
         {address && (
           <>
-            <div className="input-group-container">
-              <label style={{ marginRight: '0.5rem' }}>Select Trading Pair:</label>
-              <select
-                value={selectedPair}
-                onChange={(e) => setSelectedPair(e.target.value)}
-                className="dropdown"
+            <div className="input-group-container" style={{ marginBottom: '1rem' }}>
+              <label style={{ marginRight: '0.5rem' }}>Use Custom Parameters:</label>
+              <input
+                type="checkbox"
+                checked={useCustomParams}
+                onChange={(e) => setUseCustomParams(e.target.checked)}
                 disabled={sendingTx}
-                style={{ minWidth: '250px' }}
-              >
-                <option value="">Select a pair</option>
-                {availablePairs.map((pair) => (
-                  <option key={pair.label} value={pair.label}>
-                    {pair.label}
-                  </option>
-                ))}
-              </select>
+              />
             </div>
 
-            <div className="compact-list">
-              <div><b>Collateral In:</b> {selectedPair ? (availablePairs.find(p => p.label === selectedPair)?.collateralIsBase ? 'Base Token' : 'Quote Token') : '-'}</div>
-              <div><b>Collateral Rate Limit:</b> {selectedPair ? availablePairs.find(p => p.label === selectedPair)?.collateralRateLimit / 100 : '-'}%</div>
-            </div>
+            {!useCustomParams ? (
+              <>
+                <div className="input-group-container">
+                  <label style={{ marginRight: '0.5rem' }}>Select Trading Pair:</label>
+                  <select
+                    value={selectedPair}
+                    onChange={(e) => setSelectedPair(e.target.value)}
+                    className="dropdown"
+                    disabled={sendingTx}
+                    style={{ minWidth: '250px' }}
+                  >
+                    <option value="">Select a pair</option>
+                    {availablePairs.map((pair) => (
+                      <option key={pair.label} value={pair.label}>
+                        {pair.label}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+
+                <div className="compact-list">
+                  <div><b>Collateral In:</b> {selectedPair ? (availablePairs.find(p => p.label === selectedPair)?.collateralIsBase ? 'Base Token' : 'Quote Token') : '-'}</div>
+                  <div><b>Collateral Rate Limit:</b> {selectedPair ? availablePairs.find(p => p.label === selectedPair)?.collateralRateLimit / 100 : '-'}%</div>
+                </div>
+              </>
+            ) : (
+              <>
+                <div className="input-group-container">
+                  <label style={{ marginRight: '0.5rem' }}>Base Token Address:</label>
+                  <input
+                    type="text"
+                    value={baseToken}
+                    onChange={(e) => setBaseToken(e.target.value)}
+                    className="dropdown"
+                    disabled={sendingTx}
+                    style={{ minWidth: '250px' }}
+                    placeholder="0x..."
+                  />
+                </div>
+
+                <div className="input-group-container">
+                  <label style={{ marginRight: '0.5rem' }}>Quote Token Address:</label>
+                  <input
+                    type="text"
+                    value={quoteToken}
+                    onChange={(e) => setQuoteToken(e.target.value)}
+                    className="dropdown"
+                    disabled={sendingTx}
+                    style={{ minWidth: '250px' }}
+                    placeholder="0x..."
+                  />
+                </div>
+
+                <div className="input-group-container">
+                  <label style={{ marginRight: '0.5rem' }}>Collateral Token:</label>
+                  <div style={{ display: 'flex', gap: '1rem' }}>
+                    <label>
+                      <input
+                        type="radio"
+                        checked={collateralIsBase}
+                        onChange={() => setCollateralIsBase(true)}
+                        disabled={sendingTx}
+                      />
+                      Base Token
+                    </label>
+                    <label>
+                      <input
+                        type="radio"
+                        checked={!collateralIsBase}
+                        onChange={() => setCollateralIsBase(false)}
+                        disabled={sendingTx}
+                      />
+                      Quote Token
+                    </label>
+                  </div>
+                </div>
+
+                <div className="compact-list">
+                  <div><b>Collateral In:</b> {collateralIsBase ? 'Base Token' : 'Quote Token'}</div>
+                  <div><b>Collateral Rate Limit:</b> 20%</div>
+                </div>
+              </>
+            )}
 
             <button
               onClick={handleDeploy}
-              disabled={!address || !selectedPair || sendingTx}
+              disabled={!address || (!useCustomParams && !selectedPair) || (useCustomParams && (!baseToken || !quoteToken)) || sendingTx}
               className="button full-width-button"
             >
               {sendingTx ? 'Deploying...' : 'Deploy Pool'}
