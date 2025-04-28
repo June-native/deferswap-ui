@@ -136,6 +136,14 @@ const SelectPoolLimitPage = () => {
         >
           Deploy New Pool
         </button>
+
+        <button
+          onClick={() => navigate('/spread-order')}
+          className="swap-button full-width-button"
+          style={{ margin: '1rem 0rem 0rem 0rem', backgroundColor: '#2196F3' }} 
+        >
+          ↕️ Switch to Spread Order
+        </button>
       </div>
     </div>
   );
