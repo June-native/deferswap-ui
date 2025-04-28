@@ -5,16 +5,13 @@ import './styles/main.css';
 
 import { WagmiProvider, createConfig, http, fallback } from 'wagmi';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
-import { metaMask, walletConnect, coinbaseWallet } from '@wagmi/connectors';
+import { metaMask, coinbaseWallet } from '@wagmi/connectors';
 import { NETWORK } from './config/constants';
 
 const config = createConfig({
   chains: [NETWORK.chain],
   connectors: [
     metaMask(),
-    walletConnect({
-      projectId: 'YOUR_WALLETCONNECT_PROJECT_ID', // You'll need to get this from https://cloud.walletconnect.com/
-    }),
     coinbaseWallet({
       appName: 'DeferSwap',
     }),

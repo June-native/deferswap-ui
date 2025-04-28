@@ -10,9 +10,14 @@ export const POOLS = [
   // { label: 'DODO/USDC June Test', address: '0x68a84d670d525079016c3754cba0A2975987E9Ca' },
 ];
 
+export const LIMIT_ORDER_POOLS = [
+]
+
 // factory configs
 export const factoryAddress = '0xa2087A11C04Bd577571278E5397083082e8E3Da2';
+export const factoryLimitOrder = '0xC766C053E7d47aa9139FA75C161a511593086b94';
 export const SKIP_FIRST_X_POOLS = 2; // Skip the first X pools when fetching from factory
+export const SKIP_FIRST_X_LIMIT_ORDER_POOLS = 0; // Skip the first X pools when fetching from factory
 export const DEFAULT_POOL_CONFIG = {
   minQuoteSize: 0,
   settlementPeriod: 60 * 60 * 24 * 1, // 1 days
@@ -33,6 +38,25 @@ export const PAIRS = {
       baseToken: '0x67ee3Cb086F8a16f34beE3ca72FAD36F7Db929e2', // DODO
       quoteToken: '0x8AC76a51cc950d9822D68b83fE1Ad97B32Cd580d', // USDC
       priceFeed: '0x87701B15C08687341c2a847ca44eCfBc8d7873E1', // chainlink
+    }
+  ]
+}
+
+export const LIMIT_ORDER_PAIRS = {
+  bsc: [
+    {
+      label: 'Bsc - quote/buy:DODO base/sell:USDC',
+      baseToken: '0x8AC76a51cc950d9822D68b83fE1Ad97B32Cd580d', // USDC
+      quoteToken: '0x67ee3Cb086F8a16f34beE3ca72FAD36F7Db929e2', // DODO 
+      collateralIsBase: true,
+      collateralRateLimit: 5000,
+    },
+    {
+      label: 'Bsc - quote/buy:USDC base/sell:DODO',
+      baseToken: '0x67ee3Cb086F8a16f34beE3ca72FAD36F7Db929e2', // DODO
+      quoteToken: '0x8AC76a51cc950d9822D68b83fE1Ad97B32Cd580d', // USDC
+      collateralIsBase: false,
+      collateralRateLimit: 5000,
     }
   ]
 }
