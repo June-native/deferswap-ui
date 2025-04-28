@@ -135,7 +135,11 @@ const MakeQuoteLimit = ({
       isMarketMaker,
       sendingTx,
       swapCounter: swapCounter && BigInt(swapId) >= BigInt(swapCounter.toString()),
-      swapStatus: swap && swap[7]
+      isTaken: swap && swap[8],
+      isSettled: swap && swap[9],
+      isClaimed: swap && swap[10],
+      isCancelled: swap && swap[11],
+      isExpired: swap && BigInt(swap[6]) > BigInt(Math.floor(Date.now() / 1000))
     });
   }, [swapId, isMarketMaker, sendingTx, swapCounter, swap]);
 
@@ -190,6 +194,7 @@ const MakeQuoteLimit = ({
   const { writeContractAsync: writeApprove } = useWriteContract();
   const { writeContractAsync: writeMakeQuote } = useWriteContract();
   const { writeContractAsync: writeCancelSwap } = useWriteContract();
+  const { writeContractAsync: writeClaimQuote } = useWriteContract();
 
   const handleApprove = async () => {
     try {
@@ -275,6 +280,26 @@ const MakeQuoteLimit = ({
       onQuoteSuccess();
     } catch (err) {
       console.error('Cancel swap transaction failed:', err);
+    } finally {
+      setSendingTx(false);
+    }
+  };
+
+  const handleClaimQuote = async () => {
+    try {
+      setSendingTx(true);
+      const hash = await writeClaimQuote({
+        address: poolAddress as `0x${string}`,
+        abi: poolAbi,
+        functionName: 'claimQuote',
+        args: [BigInt(swapId)],
+        account: address,
+        chain: NETWORK.chain,
+      });
+      await publicClient.waitForTransactionReceipt({ hash });
+      onQuoteSuccess();
+    } catch (err) {
+      console.error('Claim quote transaction failed:', err);
     } finally {
       setSendingTx(false);
     }
@@ -430,6 +455,31 @@ const MakeQuoteLimit = ({
               >
                 Cancel
               </button>
+            </div>
+          </div>
+
+          <div className="sub-container">
+            <h3>Claim Quote</h3>
+            <div style={{textAlign: 'center'}}>
+              <b>ID:</b>
+              <input
+                type="number"
+                value={swapId}
+                onChange={(e) => setSwapId(e.target.value)}
+                placeholder="Enter swap ID"
+                min="0"
+                className="swap-input"
+                disabled={!isMarketMaker}
+              />
+              <button 
+                onClick={handleClaimQuote} 
+                disabled={!swapId || !isMarketMaker || sendingTx || !swap || !swap[8] || BigInt(swap[6]) > BigInt(Math.floor(Date.now() / 1000))} 
+                className="button" 
+                style={{ backgroundColor: '#4CAF50' }}
+              >
+                Claim
+              </button>
+              <p className='input-group-container-note' style={{marginTop: '10px'}}>Only available for taken and expired quotes.</p>
             </div>
           </div>
         </>
