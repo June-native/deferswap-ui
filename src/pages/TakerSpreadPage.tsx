@@ -1,21 +1,19 @@
 import { useAccount, useConnect, useDisconnect } from 'wagmi';
 import { useLocation } from 'react-router-dom';
-import TakeSwapComponent from '../components/TakeSwapComponent';
 import OraclePriceDisplay from '../components/OraclePriceDisplay';
-import UserSwapHistory from '../components/UserSwapHistory';
-import AllQuoteHistory from '../components/AllQuoteHistory';
+import TakeSwapSpread from '../components/TakeSwapSpread';
+import UserSwapHistorySpread from '../components/UserSwapHistorySpread';
 import WalletConnectButton from '../components/WalletConnectButton';
-import MakeQuoteComponent from '../components/MakeQuoteComponent';
-import { useEffect, useState, useRef } from 'react';
+import { useEffect, useState } from 'react';
 import { publicClient } from '../lib/viem';
 import { erc20Abi } from 'viem';
 import { poolAbi } from '../config/abi';
-import { NETWORK } from '../config/constants';
+import { NETWORK, APP_TITLE } from '../config/constants';
 
 
 const useQuery = () => new URLSearchParams(useLocation().search);
 
-const SwapMMPage = () => {
+const TakerSpreadPage = () => {
   const query = useQuery();
   const poolAddress = query.get('pool');
   if (!poolAddress) return <p>No pool selected.</p>;
@@ -24,34 +22,27 @@ const SwapMMPage = () => {
   const { connectors, connect } = useConnect();
   const { disconnect } = useDisconnect();
   const [refreshKey, setRefreshKey] = useState(0);
-  const allQuoteHistoryRef = useRef<{ refresh: () => void }>(null);
 
   const [baseTokenMeta, setBaseTokenMeta] = useState({ symbol: '', decimals: 18 });
   const [quoteTokenMeta, setQuoteTokenMeta] = useState({ symbol: '', decimals: 18 });
   const [ready, setReady] = useState(false);
-  const [marketMaker, setMarketMaker] = useState<`0x${string}` | null>(null);
 
   useEffect(() => {
     const loadMetadata = async () => {
       if (!poolAddress) return;
 
-      const [baseToken, quoteToken, mm] = await Promise.all([
+      const [baseToken, quoteToken] = await Promise.all([
         publicClient.readContract({
           address: poolAddress as `0x${string}`,
           abi: poolAbi,
-          functionName: 'baseToken'
+          functionName: 'baseToken',
         }),
         publicClient.readContract({
           address: poolAddress as `0x${string}`,
           abi: poolAbi,
-          functionName: 'quoteToken'
+          functionName: 'quoteToken',
         }),
-        publicClient.readContract({
-          address: poolAddress as `0x${string}`,
-          abi: poolAbi,
-          functionName: 'marketMaker'
-        })
-      ]) as [`0x${string}`, `0x${string}`, `0x${string}`];
+      ]);
 
       const [baseSymbol, baseDecimals] = await Promise.all([
         publicClient.readContract({ address: baseToken as `0x${string}`, abi: erc20Abi, functionName: 'symbol' }),
@@ -65,7 +56,6 @@ const SwapMMPage = () => {
 
       setBaseTokenMeta({ symbol: baseSymbol, decimals: baseDecimals });
       setQuoteTokenMeta({ symbol: quoteSymbol, decimals: quoteDecimals });
-      setMarketMaker(mm);
       setReady(true);
     };
 
@@ -92,25 +82,17 @@ const SwapMMPage = () => {
         }}
         onClick={() => window.location.href = '/'}
       >
-        🐳 🔸 DeferSwap ({NETWORK.name} {baseTokenMeta.symbol}/{quoteTokenMeta.symbol})
+        {APP_TITLE.SPREAD_ORDER} ({NETWORK.name} {baseTokenMeta.symbol}/{quoteTokenMeta.symbol})
       </h1>
       <WalletConnectButton />
+
+      <OraclePriceDisplay poolAddress={poolAddress} baseTokenMeta={baseTokenMeta} quoteTokenMeta={quoteTokenMeta} />
       <div style={{ marginBottom: '2rem' }}/>
-      <AllQuoteHistory ref={allQuoteHistoryRef} poolAddress={poolAddress} baseTokenMeta={baseTokenMeta} quoteTokenMeta={quoteTokenMeta} />
+      <TakeSwapSpread onSwapSuccess={() => setRefreshKey(k => k + 1)} poolAddress={poolAddress} baseTokenMeta={baseTokenMeta} quoteTokenMeta={quoteTokenMeta} />
       <div style={{ marginBottom: '2rem' }}/>
-      <MakeQuoteComponent
-        poolAddress={poolAddress}
-        baseTokenMeta={baseTokenMeta}
-        quoteTokenMeta={quoteTokenMeta}
-        onQuoteSuccess={() => {
-        }}
-        onRefreshQuotes={() => {
-          allQuoteHistoryRef.current?.refresh();
-        }}
-        marketMaker={marketMaker}
-      />
+      <UserSwapHistorySpread refreshKey={refreshKey} poolAddress={poolAddress} baseTokenMeta={baseTokenMeta} quoteTokenMeta={quoteTokenMeta} />
     </div>
   );
 };
 
-export default SwapMMPage;
+export default TakerSpreadPage;

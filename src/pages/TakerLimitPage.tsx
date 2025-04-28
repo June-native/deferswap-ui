@@ -2,9 +2,10 @@ import { useLocation } from 'react-router-dom';
 import { useReadContract, useAccount } from 'wagmi';
 import { poolAbiLimit as poolAbi } from '../config/abi';
 import { erc20Abi } from 'viem';
-import AllQuoteHistoryV2 from '../components/AllQuoteHistoryV2';
+import AllQuoteHistoryLimit from '../components/AllQuoteHistoryLimit';
 import WalletConnectButton from '../components/WalletConnectButton';
-import { NETWORK } from '../config/constants';
+import { NETWORK, APP_TITLE } from '../config/constants';
+import TakeSwapLimit from '../components/TakeSwapLimit';
 import TakeQuoteComponentV2 from '../components/TakeQuoteComponentV2';
 const useQuery = () => new URLSearchParams(useLocation().search);
 
@@ -87,17 +88,17 @@ const TakerDashboardPage = () => {
         }}
         onClick={() => window.location.href = '/limit-order'}
       >
-        🐳 🔸 DeferSwap - LimitOrder ({NETWORK.name} {baseTokenMeta.symbol}/{quoteTokenMeta.symbol})
+        {APP_TITLE.LIMIT_ORDER} ({NETWORK.name} {baseTokenMeta.symbol}/{quoteTokenMeta.symbol})
       </h1>
       <WalletConnectButton />
       <div style={{ marginBottom: '2rem' }}/>
-      <AllQuoteHistoryV2
+      <AllQuoteHistoryLimit
         poolAddress={poolAddress}
         baseTokenMeta={baseTokenMeta}
         quoteTokenMeta={quoteTokenMeta}
       />
       <div style={{ marginBottom: '2rem' }}/>
-      <TakeQuoteComponentV2
+      <TakeSwapLimit
         poolAddress={poolAddress}
         baseTokenMeta={baseTokenMeta}
         quoteTokenMeta={quoteTokenMeta}

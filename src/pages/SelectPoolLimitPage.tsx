@@ -2,10 +2,10 @@ import { useNavigate } from 'react-router-dom';
 import { useState, useEffect } from 'react';
 import { useReadContract } from 'wagmi';
 import { factoryAbi } from '../config/abi';
-import { factoryLimitOrder as factoryAddress, LIMIT_ORDER_POOLS as POOLS, NETWORK, SKIP_FIRST_X_LIMIT_ORDER_POOLS as SKIP_FIRST_X_POOLS } from '../config/constants';
+import { factoryLimitOrder as factoryAddress, LIMIT_ORDER_POOLS as POOLS, NETWORK, SKIP_FIRST_X_LIMIT_ORDER_POOLS as SKIP_FIRST_X_POOLS, APP_TITLE } from '../config/constants';
 import { publicClient } from '../lib/viem';
 
-const LimitOrderPoolSelectorPage = () => {
+const SelectPoolLimitPage = () => {
   const [selected, setSelected] = useState('');
   const [factoryPools, setFactoryPools] = useState<string[]>([]);
   const [loading, setLoading] = useState(true);
@@ -89,7 +89,7 @@ const LimitOrderPoolSelectorPage = () => {
           width: '100%',
         }}
       >
-        🐳 🔸 DeferSwap Limit Order
+        {APP_TITLE.LIMIT_ORDER}
       </h1>
       <div className="main-container" style={{ maxWidth: '400px', margin: '0 auto', padding: '2rem', marginTop: '2rem' }}>
         <h2 className="oracle-title">Select a Pool to Start</h2>
@@ -141,4 +141,4 @@ const LimitOrderPoolSelectorPage = () => {
   );
 };
 
-export default LimitOrderPoolSelectorPage; 
+export default SelectPoolLimitPage; 

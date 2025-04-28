@@ -1,10 +1,10 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, forwardRef } from 'react';
 import { useReadContract } from 'wagmi';
 import { formatUnits } from 'viem';
 import { poolAbiLimit as poolAbi } from '../config/abi';
 import { publicClient } from '../lib/viem';
 
-interface AllQuoteHistoryV2Props {
+interface AllQuoteHistoryProps {
   poolAddress: string;
   baseTokenMeta: { symbol: string; decimals: number };
   quoteTokenMeta: { symbol: string; decimals: number };
@@ -26,11 +26,7 @@ interface Swap {
   cancelled: boolean;
 }
 
-const AllQuoteHistoryV2 = ({
-  poolAddress,
-  baseTokenMeta,
-  quoteTokenMeta,
-}: AllQuoteHistoryV2Props) => {
+const AllQuoteHistoryLimit = forwardRef<{ refresh: () => void }, AllQuoteHistoryProps>(({ poolAddress, baseTokenMeta, quoteTokenMeta }, ref) => {
   const [swaps, setSwaps] = useState<Swap[]>([]);
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
@@ -239,6 +235,6 @@ const AllQuoteHistoryV2 = ({
       )}
     </div>
   );
-};
+});
 
-export default AllQuoteHistoryV2;
+export default AllQuoteHistoryLimit;

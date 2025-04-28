@@ -18,7 +18,7 @@ const useDebounce = (value: string, delay: number) => {
   return debounced;
 };
 
-const TakeSwapComponent = ({
+const TakeSwapSpread = ({
   poolAddress,
   baseTokenMeta,
   quoteTokenMeta,
@@ -324,4 +324,4 @@ const TakeSwapComponent = ({
   );
 };
 
-export default TakeSwapComponent;
+export default TakeSwapSpread;

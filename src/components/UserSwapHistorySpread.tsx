@@ -6,7 +6,7 @@ import { publicClient } from '../lib/viem';
 import { parseUnits, formatUnits } from 'viem';
 import { NETWORK } from '../config/constants';
 
-const UserSwapHistory = ({
+const UserSwapHistorySpread = ({
   poolAddress,
   baseTokenMeta,
   quoteTokenMeta,
@@ -229,4 +229,4 @@ const UserSwapHistory = ({
   );
 };
 
-export default UserSwapHistory;
+export default UserSwapHistorySpread;

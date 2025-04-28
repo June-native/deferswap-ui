@@ -2,12 +2,12 @@ import { useState } from 'react';
 import { useAccount, useWriteContract } from 'wagmi';
 import { parseUnits } from 'viem';
 import { factoryAbiLimit as factoryAbi } from '../config/abi';
-import { factoryLimitOrder, LIMIT_ORDER_PAIRS as PAIRS, NETWORK } from '../config/constants';
+import { factoryLimitOrder, LIMIT_ORDER_PAIRS as PAIRS, NETWORK, APP_TITLE } from '../config/constants';
 import WalletConnectButton from '../components/WalletConnectButton';
 import { useNavigate } from 'react-router-dom';
 import { publicClient } from '../lib/viem';
 
-const DeployLimitOrderPoolPage = () => {
+const DeployPoolLimitPage = () => {
   const { address } = useAccount();
   const [selectedPair, setSelectedPair] = useState('');
   const [sendingTx, setSendingTx] = useState(false);
@@ -66,7 +66,7 @@ const DeployLimitOrderPoolPage = () => {
         }}
         onClick={() => window.location.href = '/limit-order'}
       >
-        🐳 🔸 DeferSwap Limit Order ({NETWORK.name})
+        {APP_TITLE.LIMIT_ORDER} ({NETWORK.name})
       </h1>
       <WalletConnectButton />
       <div className="main-container">
@@ -111,4 +111,4 @@ const DeployLimitOrderPoolPage = () => {
   );
 };
 
-export default DeployLimitOrderPoolPage; 
+export default DeployPoolLimitPage; 

@@ -6,14 +6,10 @@ import { publicClient } from '../lib/viem';
 import { parseUnits, formatUnits } from 'viem';
 import { NETWORK } from '../config/constants';
 
-const AllQuoteHistory = forwardRef(({
+const AllQuoteHistorySpread = forwardRef<{ refresh: () => void }, { poolAddress: string; baseTokenMeta: { symbol: string; decimals: number }; quoteTokenMeta: { symbol: string; decimals: number } }>(({
   poolAddress,
   baseTokenMeta,
   quoteTokenMeta,
-}: {
-  poolAddress: string;
-  baseTokenMeta: { symbol: string; decimals: number };
-  quoteTokenMeta: { symbol: string; decimals: number };
 }, ref) => {
   const [userSwaps, setUserSwaps] = useState([]);
   const [swapCount, setSwapCount] = useState<number | null>(null);
@@ -218,4 +214,4 @@ const AllQuoteHistory = forwardRef(({
   );
 });
 
-export default AllQuoteHistory;
+export default AllQuoteHistorySpread;

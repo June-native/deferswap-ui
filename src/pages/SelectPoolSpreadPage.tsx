@@ -2,10 +2,10 @@ import { useNavigate } from 'react-router-dom';
 import { useState, useEffect } from 'react';
 import { useReadContract } from 'wagmi';
 import { factoryAbi } from '../config/abi';
-import { factoryAddress, POOLS, NETWORK, SKIP_FIRST_X_POOLS } from '../config/constants';
+import { factoryAddress, POOLS, NETWORK, SKIP_FIRST_X_POOLS, APP_TITLE } from '../config/constants';
 import { publicClient } from '../lib/viem';
 
-const PoolSelectorPage = () => {
+const SelectPoolSpreadPage = () => {
   const [selected, setSelected] = useState('');
   const [factoryPools, setFactoryPools] = useState<string[]>([]);
   const [loading, setLoading] = useState(true);
@@ -79,7 +79,7 @@ const PoolSelectorPage = () => {
 
   return (
     <div style={{ maxWidth: '800px', margin: '0 auto', padding: '2rem', position: 'relative' }}>
-    <h1 
+      <h1 
         style={{ 
           fontWeight: 'bold', 
           marginBottom: '1rem',
@@ -89,7 +89,7 @@ const PoolSelectorPage = () => {
           width: '100%',
         }}
       >
-        🐳 🔸 DeferSwap
+        {APP_TITLE.SPREAD_ORDER}
       </h1>
     <div className="main-container" style={{ maxWidth: '400px', margin: '0 auto', padding: '2rem', marginTop: '2rem' }}>
         <h2 className="oracle-title">Select a Pool to Start</h2>
@@ -141,4 +141,4 @@ const PoolSelectorPage = () => {
   );
 };
 
-export default PoolSelectorPage;
+export default SelectPoolSpreadPage;

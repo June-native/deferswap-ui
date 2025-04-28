@@ -6,19 +6,19 @@ import { publicClient } from '../lib/viem';
 import { poolAbiLimit as poolAbi } from '../config/abi';
 import { NETWORK } from '../config/constants';
 
-interface MakeQuoteComponentV2Props {
+interface MakeQuoteProps {
   poolAddress: string;
   baseTokenMeta: { symbol: string; decimals: number };
   quoteTokenMeta: { symbol: string; decimals: number };
   onQuoteSuccess: () => void;
 }
 
-const MakeQuoteComponentV2 = ({
+const MakeQuoteLimit = ({
   poolAddress,
   baseTokenMeta,
   quoteTokenMeta,
   onQuoteSuccess,
-}: MakeQuoteComponentV2Props) => {
+}: MakeQuoteProps) => {
   const { address } = useAccount();
   const [quoteAmount, setQuoteAmount] = useState('');
   const [baseAmount, setBaseAmount] = useState('');
@@ -427,4 +427,4 @@ const MakeQuoteComponentV2 = ({
   );
 };
 
-export default MakeQuoteComponentV2; 
+export default MakeQuoteLimit; 

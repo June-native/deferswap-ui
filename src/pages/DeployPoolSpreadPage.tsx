@@ -2,12 +2,12 @@ import { useState } from 'react';
 import { useAccount, useWriteContract } from 'wagmi';
 import { parseUnits } from 'viem';
 import { factoryAbi } from '../config/abi';
-import { factoryAddress, PAIRS, DEFAULT_POOL_CONFIG, NETWORK } from '../config/constants';
+import { factoryAddress, PAIRS, DEFAULT_POOL_CONFIG, NETWORK, APP_TITLE } from '../config/constants';
 import WalletConnectButton from '../components/WalletConnectButton';
 import { useNavigate } from 'react-router-dom';
 import { publicClient } from '../lib/viem';
 
-const DeployPoolPage = () => {
+const DeployPoolSpreadPage = () => {
   const { address } = useAccount();
   const [selectedPair, setSelectedPair] = useState('');
   const [sendingTx, setSendingTx] = useState(false);
@@ -66,7 +66,7 @@ const DeployPoolPage = () => {
         }}
         onClick={() => window.location.href = '/'}
       >
-        🐳 🔸 DeferSwap ({NETWORK.name})
+        {APP_TITLE.SPREAD_ORDER} ({NETWORK.name})
       </h1>
     <WalletConnectButton />
     <div className="main-container">
@@ -114,4 +114,4 @@ const DeployPoolPage = () => {
   );
 };
 
-export default DeployPoolPage; 
+export default DeployPoolSpreadPage; 

@@ -6,19 +6,19 @@ import { poolAbiLimit as poolAbi } from '../config/abi';
 import { publicClient } from '../lib/viem';
 import { NETWORK } from '../config/constants';
 
-interface TakeQuoteComponentV2Props {
+interface TakeSwapProps {
   poolAddress: string;
   baseTokenMeta: { symbol: string; decimals: number };
   quoteTokenMeta: { symbol: string; decimals: number };
   onQuoteSuccess: () => void;
 }
 
-const TakeQuoteComponentV2 = ({
+const TakeSwapLimit = ({
   poolAddress,
   baseTokenMeta,
   quoteTokenMeta,
   onQuoteSuccess,
-}: TakeQuoteComponentV2Props) => {
+}: TakeSwapProps) => {
   const { address } = useAccount();
   const [swapId, setSwapId] = useState('');
   const [amount, setAmount] = useState('');
@@ -435,4 +435,4 @@ const TakeQuoteComponentV2 = ({
   );
 };
 
-export default TakeQuoteComponentV2; 
+export default TakeSwapLimit; 

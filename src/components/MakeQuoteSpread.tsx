@@ -7,7 +7,7 @@ import { publicClient } from '../lib/viem';
 import { poolAbi } from '../config/abi';
 import { NETWORK } from '../config/constants';
 
-const MakeQuoteComponent = ({
+const MakeQuoteSpread = ({
   poolAddress,
   baseTokenMeta,
   quoteTokenMeta,
@@ -698,4 +698,4 @@ const MakeQuoteComponent = ({
   );
 };
 
-export default MakeQuoteComponent; 
+export default MakeQuoteSpread; 

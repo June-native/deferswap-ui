@@ -1,12 +1,12 @@
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
-import PoolSelectorPage from './pages/PoolSelectorPage';
-import SwapDashboardPage from './pages/SwapDashboardPage';
-import SwapMMPage from './pages/SwapMMPage';
-import SwapMMPageV2 from './pages/SwapMMPageV2';
-import DeployPoolPage from './pages/DeployPoolPage';
-import TakerDashboardPage from './pages/TakerDashboardPage';
-import LimitOrderPoolSelectorPage from './pages/LimitOrderPoolSelectorPage';
-import DeployLimitOrderPoolPage from './pages/DeployLimitOrderPoolPage';
+import SelectPoolSpreadPage from './pages/SelectPoolSpreadPage';
+import SelectPoolLimitPage from './pages/SelectPoolLimitPage';
+import TakerSpreadPage from './pages/TakerSpreadPage';
+import MakerSpreadPage from './pages/MakerSpreadPage';
+import TakerLimitPage from './pages/TakerLimitPage';
+import MakerLimitPage from './pages/MakerLimitPage';
+import DeployPoolSpreadPage from './pages/DeployPoolSpreadPage';
+import DeployPoolLimitPage from './pages/DeployPoolLimitPage';
 
 
 // function App() {
@@ -17,16 +17,19 @@ function App() {
   return (
     <BrowserRouter>
       <Routes>
-        <Route path="/" element={<PoolSelectorPage />} />
-        <Route path="/swap" element={<SwapDashboardPage />} />
-        <Route path="/mm" element={<SwapMMPage />} />
-        <Route path="/limitQuote" element={<SwapMMPageV2 />} />
-        <Route path="/limitTake" element={<TakerDashboardPage />} />
-        <Route path="/deploy" element={<DeployPoolPage />} />
-        <Route path="/limit-order" element={<LimitOrderPoolSelectorPage />} />
-        <Route path="/limit-order/take" element={<TakerDashboardPage />} />
-        <Route path="/limit-order/make" element={<SwapMMPageV2 />} />
-        <Route path="/limit-order/deploy" element={<DeployLimitOrderPoolPage />} />
+        <Route path="/" element={<SelectPoolSpreadPage />} />
+        <Route path="/swap" element={<TakerSpreadPage />} />
+        <Route path="/mm" element={<MakerSpreadPage />} />
+        <Route path="/deploy" element={<DeployPoolSpreadPage />} />
+        {/* new routings */}
+        <Route path="/spread-order" element={<SelectPoolSpreadPage />} />
+        <Route path="/spread-order/take" element={<TakerSpreadPage />} />
+        <Route path="/spread-order/make" element={<MakerSpreadPage />} />
+        <Route path="/spread-order/deploy" element={<DeployPoolSpreadPage />} />
+        <Route path="/limit-order" element={<SelectPoolLimitPage />} />
+        <Route path="/limit-order/take" element={<TakerLimitPage />} />
+        <Route path="/limit-order/make" element={<MakerLimitPage />} />
+        <Route path="/limit-order/deploy" element={<DeployPoolLimitPage />} />
       </Routes>
     </BrowserRouter>
   );

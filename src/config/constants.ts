@@ -75,5 +75,11 @@ export const NETWORK = {
   explorerUrl: 'https://bscscan.com'
 };
 
+export const APP_TITLE = {
+  BASE: '🐳 🔸 PatienceSwap',
+  LIMIT_ORDER: '🐳 🔸 PatienceSwap - Limit Order',
+  SPREAD_ORDER: '🐳 🔸 PatienceSwap - Spread Order',
+};
+
 
 
