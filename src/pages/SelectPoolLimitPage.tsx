@@ -54,19 +54,17 @@ const SelectPoolLimitPage = () => {
   }, [loading, factoryPools]);
 
   // Combine POOLS and factory pools
+  const factoryPoolsSorted = factoryPools.map((address, index) => ({
+    label: `Public Pool 0x...${address.slice(-6)}`,
+    address,
+    isFactory: true,
+  })).reverse();
+
   const allPools = [
-    // Factory pools in descending order (newest first)
-    ...factoryPools.map((address, index) => ({
-      label: `Public Pool 0x...${address.slice(-6)}`,
-      address,
-      isFactory: true,
-      index: factoryPools.length - 1 - index, // Reverse the index for descending order
-    })).sort((a, b) => b.index - a.index), // Sort by index in descending order
-    // Pre-configured pools
+    ...factoryPoolsSorted,
     ...POOLS.map(pool => ({
       ...pool,
       isFactory: false,
-      index: -1, // Pre-configured pools come after factory pools
     })),
   ];
 
@@ -103,9 +101,10 @@ const SelectPoolLimitPage = () => {
           {loading ? (
             <option value="">Loading Pools...</option>
           ) : (
+            console.log(allPools),
             allPools.map((pool) => (
               <option key={pool.address} value={pool.address}>
-                {pool.isFactory ? `Public Pool 0x...${pool.address.slice(-6)}` : pool.label}
+                {pool.label}
               </option>
             ))
           )}

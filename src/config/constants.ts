@@ -11,13 +11,15 @@ export const POOLS = [
 ];
 
 export const LIMIT_ORDER_POOLS = [
+  { label: 'June Test - USDC/DODO', address: '0x08323526d17F73af8DA57386C7E154433F6400CD' },
+  { label: 'June Test - CAKE/USDT', address: '0x993796C408ae8E415a3297c394372880C035f46D' },
 ]
 
 // factory configs
 export const factoryAddress = '0xa2087A11C04Bd577571278E5397083082e8E3Da2';
 export const factoryLimitOrder = '0xC766C053E7d47aa9139FA75C161a511593086b94';
 export const SKIP_FIRST_X_POOLS = 2; // Skip the first X pools when fetching from factory
-export const SKIP_FIRST_X_LIMIT_ORDER_POOLS = 0; // Skip the first X pools when fetching from factory
+export const SKIP_FIRST_X_LIMIT_ORDER_POOLS = 2; // Skip the first X pools when fetching from factory
 export const DEFAULT_POOL_CONFIG = {
   minQuoteSize: 0,
   settlementPeriod: 60 * 60 * 24 * 1, // 1 days
