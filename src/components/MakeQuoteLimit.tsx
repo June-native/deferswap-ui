@@ -32,6 +32,7 @@ const MakeQuoteLimit = ({
   const [swapId, setSwapId] = useState('');
   const [priceDirection, setPriceDirection] = useState<'base' | 'quote'>('base');
   const [price, setPrice] = useState<string>('');
+  const [debugSwap, setDebugSwap] = useState(null);
 
   // Get token addresses and pool parameters
   const { data: baseToken } = useReadContract({
@@ -127,6 +128,16 @@ const MakeQuoteLimit = ({
       setPrice('');
     }
   }, [baseAmount, quoteAmount, priceDirection]);
+
+  useEffect(() => {
+    console.log('Debug values:', {
+      swapId,
+      isMarketMaker,
+      sendingTx,
+      swapCounter: swapCounter && BigInt(swapId) >= BigInt(swapCounter.toString()),
+      swapStatus: swap && swap[7]
+    });
+  }, [swapId, isMarketMaker, sendingTx, swapCounter, swap]);
 
   // Validate inputs
   const validateInputs = () => {
@@ -413,7 +424,7 @@ const MakeQuoteLimit = ({
               />
               <button 
                 onClick={handleCancelSwap} 
-                disabled={!swapId || !isMarketMaker || sendingTx || (swapCounter && BigInt(swapId) >= BigInt(swapCounter.toString())) || (swap && swap[7])} 
+                disabled={!swapId || !isMarketMaker || sendingTx || (swapCounter && BigInt(swapId) >= BigInt(swapCounter.toString())) || (swap && swap[8])} 
                 className="button" 
                 style={{ backgroundColor: '#ff4444' }}
               >
