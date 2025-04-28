@@ -6,7 +6,7 @@ import AllQuoteHistoryLimit from '../components/AllQuoteHistoryLimit';
 import WalletConnectButton from '../components/WalletConnectButton';
 import { NETWORK, APP_TITLE } from '../config/constants';
 import TakeSwapLimit from '../components/TakeSwapLimit';
-import TakeQuoteComponentV2 from '../components/TakeQuoteComponentV2';
+
 const useQuery = () => new URLSearchParams(useLocation().search);
 
 const TakerDashboardPage = () => {
