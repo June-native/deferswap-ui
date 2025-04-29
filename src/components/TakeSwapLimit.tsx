@@ -25,6 +25,7 @@ const TakeSwapLimit = ({
   const [sendingTx, setSendingTx] = useState(false);
   const [requiredCollateralAmount, setRequiredCollateralAmount] = useState<bigint>(0n);
   const [requiredQuoteAmount, setRequiredQuoteAmount] = useState<bigint>(0n);
+  const [adjustedQuoteAmount, setAdjustedQuoteAmount] = useState<bigint>(0n);
   const [minQuoteAmount, setMinQuoteAmount] = useState<bigint>(0n);
   const [hasCollateralAllowance, setHasCollateralAllowance] = useState(false);
   const [hasQuoteAllowance, setHasQuoteAllowance] = useState(false);
@@ -95,10 +96,14 @@ const TakeSwapLimit = ({
       // Calculate collateral amount
       const collateralAmount = collateralIsBase ? (BigInt(baseAmount) * BigInt(collateralRate)) / 10000n : (BigInt(quoteAmount) * BigInt(collateralRate)) / 10000n;
       setRequiredCollateralAmount(collateralAmount);
+      // Set original quote amount for approvals
       setRequiredQuoteAmount(quoteAmount);
+      // Set adjusted quote amount for validation
+      const adjustedAmount = collateralIsBase ? quoteAmount : BigInt(quoteAmount) - collateralAmount;
+      setAdjustedQuoteAmount(adjustedAmount);
       setMinQuoteAmount(minQuote);
     }
-  }, [swap]);
+  }, [swap, collateralIsBase]);
 
   // Update allowance states
   useEffect(() => {
@@ -293,8 +298,8 @@ const TakeSwapLimit = ({
         warnings.push('This quote has been cancelled');
       }
 
-      // Check quote balance
-      if (quoteBalance && BigInt(quoteBalance) < requiredQuoteAmount) {
+      // Check quote balance against adjusted amount
+      if (quoteBalance && BigInt(quoteBalance) < adjustedQuoteAmount) {
         warnings.push('Insufficient quote token balance for payment');
       }
     }
@@ -399,7 +404,7 @@ const TakeSwapLimit = ({
 
         {swap && (
           <div className="wallet-info">
-            <div><b>Required Quote Amount: </b>{formatUnits(requiredQuoteAmount, quoteTokenMeta.decimals)} {quoteTokenMeta.symbol}</div>
+            <div><b>Required Quote Amount: </b>{formatUnits(adjustedQuoteAmount, quoteTokenMeta.decimals)} {quoteTokenMeta.symbol}</div>
             <div><b>Quote Balance: </b>{formatUnits(quoteBalance || 0n, quoteTokenMeta.decimals)} {quoteTokenMeta.symbol}</div>
           </div>
         )}

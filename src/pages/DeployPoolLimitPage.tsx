@@ -129,7 +129,7 @@ const DeployPoolLimitPage = () => {
             ) : (
               <>
                 <div className="input-group-container">
-                  <label style={{ marginRight: '0.5rem' }}>Base Token Address:</label>
+                  <label style={{ marginRight: '0.5rem' }}>Selling(base) Token Address:</label>
                   <input
                     type="text"
                     value={baseToken}
@@ -142,7 +142,7 @@ const DeployPoolLimitPage = () => {
                 </div>
 
                 <div className="input-group-container">
-                  <label style={{ marginRight: '0.5rem' }}>Quote Token Address:</label>
+                  <label style={{ marginRight: '0.5rem' }}>Buying(quote) Token Address:</label>
                   <input
                     type="text"
                     value={quoteToken}
@@ -164,7 +164,7 @@ const DeployPoolLimitPage = () => {
                         onChange={() => setCollateralIsBase(true)}
                         disabled={sendingTx}
                       />
-                      Base Token
+                      Selling(base) Token
                     </label>
                     <label>
                       <input
@@ -173,7 +173,7 @@ const DeployPoolLimitPage = () => {
                         onChange={() => setCollateralIsBase(false)}
                         disabled={sendingTx}
                       />
-                      Quote Token
+                      Buying(quote) Token
                     </label>
                   </div>
                 </div>

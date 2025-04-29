@@ -143,6 +143,21 @@ const MakeQuoteLimit = ({
     });
   }, [swapId, isMarketMaker, sendingTx, swapCounter, swap]);
 
+  // Get last swap ID
+  const { data: lastSwapId } = useReadContract({
+    address: poolAddress as `0x${string}`,
+    abi: poolAbi,
+    functionName: 'swapCounter',
+  });
+
+  // Get last swap details
+  const { data: lastSwap } = useReadContract({
+    address: poolAddress as `0x${string}`,
+    abi: poolAbi,
+    functionName: 'swaps',
+    args: [lastSwapId ? BigInt(lastSwapId.toString()) - 1n : 0n],
+  });
+
   // Validate inputs
   const validateInputs = () => {
     const warnings = [];
@@ -183,6 +198,17 @@ const MakeQuoteLimit = ({
 
     if (!quoteAmount || !baseAmount || !minQuoteAmount || !orderExpiry || !settleExpiry || !collateralRate) {
       warnings.push('Please fill in all fields');
+    }
+
+    // Check last swap status
+    if (lastSwap) {
+      const isLastSwapSettled = lastSwap[9]; // settled
+      const isLastSwapClaimed = lastSwap[10]; // claimed
+      const isLastSwapCancelled = lastSwap[11]; // cancelled
+      
+      if (Number(swapCounter) > 0 && !isLastSwapSettled && !isLastSwapClaimed && !isLastSwapCancelled) {
+        warnings.push('Previous order must be settled, claimed, or cancelled before submitting a new one');
+      }
     }
 
     return warnings;

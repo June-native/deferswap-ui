@@ -13,7 +13,7 @@ const config = createConfig({
   connectors: [
     metaMask(),
     coinbaseWallet({
-      appName: 'DeferSwap',
+      appName: 'PatienceSwap',
     }),
   ],
   transports: {
