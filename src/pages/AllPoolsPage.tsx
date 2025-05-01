@@ -1,6 +1,7 @@
-import { useState } from 'react';
+import { useState, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useDeferswapPoolInfo, useLimitswapPoolInfo } from '../hooks/usePoolInfo';
+import { useTokenInfo, TokenInfo } from '../hooks/useTokenInfo';
 import { formatUnits } from 'viem';
 import { APP_TITLE, NETWORK } from '../config/constants';
 import WalletConnectButton from '../components/WalletConnectButton';
@@ -11,6 +12,38 @@ const AllPoolsPage = () => {
   
   const { pools: deferswapPools, isLoading: isLoadingDeferswap } = useDeferswapPoolInfo(50, 0);
   const { pools: limitswapPools, isLoading: isLoadingLimitswap } = useLimitswapPoolInfo(50, 0);
+
+  const uniqueTokenAddresses = useMemo(() => {
+    const addresses = new Set<string>();
+    if (deferswapPools) {
+      deferswapPools.forEach(pool => {
+        addresses.add(pool.baseToken);
+        addresses.add(pool.quoteToken);
+      });
+    }
+    if (limitswapPools) {
+      limitswapPools.forEach(pool => {
+        addresses.add(pool.baseToken);
+        addresses.add(pool.quoteToken);
+      });
+    }
+    return Array.from(addresses);
+  }, [deferswapPools, limitswapPools]);
+
+  const tokenInfoResults = uniqueTokenAddresses.map(address => useTokenInfo(address));
+
+  const tokenInfoMap = useMemo(() => {
+    const map: Record<string, TokenInfo> = {};
+    uniqueTokenAddresses.forEach((address, index) => {
+      const result = tokenInfoResults[index];
+      if (result.tokenInfo) {
+        map[address] = result.tokenInfo;
+      }
+    });
+    return map;
+  }, [tokenInfoResults, uniqueTokenAddresses]);
+
+  const isLoadingTokens = tokenInfoResults.some(result => result.isLoading);
 
   const reversedDeferswapPools = deferswapPools?.slice().reverse();
   const reversedLimitswapPools = limitswapPools?.slice().reverse();
@@ -49,11 +82,12 @@ const AllPoolsPage = () => {
     return formatUnits(BigInt(amount), decimals);
   };
 
-  const TokenDisplay = ({ address, tokenInfo }: { address: string, tokenInfo?: { symbol: string, name: string } }) => {
+  const TokenDisplay = ({ address }: { address: string }) => {
+    const info = tokenInfoMap[address];
     return (
       <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-        <span>{tokenInfo?.symbol || formatAddress(address)}</span>
-        <span style={{ color: '#666' }}>({tokenInfo?.name || 'Unknown'})</span>
+        <span>{info?.symbol || formatAddress(address)}</span>
+        <span style={{ color: '#666' }}>({info?.name || 'Unknown'})</span>
         <a 
           href={`${NETWORK.explorerUrl}/address/${address}`}
           target="_blank"
@@ -66,7 +100,7 @@ const AllPoolsPage = () => {
     );
   };
 
-  if (isLoadingDeferswap || isLoadingLimitswap) {
+  if (isLoadingDeferswap || isLoadingLimitswap || isLoadingTokens) {
     return (
       <div style={{ maxWidth: '800px', margin: '0 auto', padding: '2rem' }}>
         <p className="animate-spin loader">↻</p> 
@@ -142,10 +176,10 @@ const AllPoolsPage = () => {
                     Pool {formatAddress(pool.poolAddress)}
                   </h2>
                   <p style={{ color: '#666', marginBottom: '0.5rem' }}>
-                    Base: <TokenDisplay address={pool.baseToken} tokenInfo={pool.baseTokenInfo} />
+                    Base: <TokenDisplay address={pool.baseToken} />
                   </p>
                   <p style={{ color: '#666', marginBottom: '0.5rem' }}>
-                    Quote: <TokenDisplay address={pool.quoteToken} tokenInfo={pool.quoteTokenInfo} />
+                    Quote: <TokenDisplay address={pool.quoteToken} />
                   </p>
                   <p style={{ color: '#666' }}>
                     Market Maker: 
@@ -226,10 +260,10 @@ const AllPoolsPage = () => {
                     Pool {formatAddress(pool.poolAddress)}
                   </h2>
                   <p style={{ color: '#666', marginBottom: '0.5rem' }}>
-                    Base: <TokenDisplay address={pool.baseToken} tokenInfo={pool.baseTokenInfo} />
+                    Base: <TokenDisplay address={pool.baseToken} />
                   </p>
                   <p style={{ color: '#666', marginBottom: '0.5rem' }}>
-                    Quote: <TokenDisplay address={pool.quoteToken} tokenInfo={pool.quoteTokenInfo} />
+                    Quote: <TokenDisplay address={pool.quoteToken} />
                   </p>
                   <p style={{ color: '#666', marginBottom: '0.5rem' }}>
                     Market Maker: 
