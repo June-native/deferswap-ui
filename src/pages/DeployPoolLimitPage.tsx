@@ -85,8 +85,8 @@ const DeployPoolLimitPage = () => {
       // Wait for transaction to be mined
       await publicClient.waitForTransactionReceipt({ hash });
       
-      // Navigate back to limit order pool select page
-      navigate('/limit-order');
+      // Navigate to all-pools with myPools=true
+      navigate('/all-pools?tab=limitswap&myPools=true');
     } catch (err) {
       console.error('Limit Order Pool deployment failed:', err);
     } finally {

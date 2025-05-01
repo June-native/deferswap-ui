@@ -8,6 +8,7 @@ import MakerLimitPage from './pages/MakerLimitPage';
 import DeployPoolSpreadPage from './pages/DeployPoolSpreadPage';
 import DeployPoolLimitPage from './pages/DeployPoolLimitPage';
 import AllPoolsPage from './pages/AllPoolsPage';
+import SwapOrQuotePage from './pages/SwapOrQuotePage';
 
 
 // function App() {
@@ -18,7 +19,7 @@ function App() {
   return (
     <BrowserRouter>
       <Routes>
-        <Route path="/" element={<SelectPoolSpreadPage />} />
+        <Route path="/" element={<SwapOrQuotePage />} />
         <Route path="/swap" element={<TakerSpreadPage />} />
         <Route path="/mm" element={<MakerSpreadPage />} />
         <Route path="/deploy" element={<DeployPoolSpreadPage />} />
@@ -32,6 +33,7 @@ function App() {
         <Route path="/limit-order/make" element={<MakerLimitPage />} />
         <Route path="/limit-order/deploy" element={<DeployPoolLimitPage />} />
         <Route path="/all-pools" element={<AllPoolsPage />} />
+        <Route path="/start" element={<SwapOrQuotePage />} />
       </Routes>
     </BrowserRouter>
   );

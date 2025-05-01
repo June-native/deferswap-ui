@@ -65,7 +65,7 @@ const AllPoolsPage = () => {
 
   const filteredDeferswapPools = useMemo(() => {
     if (!deferswapPools) return [];
-    return deferswapPools.filter(pool => {
+    return deferswapPools.slice().reverse().filter(pool => {
       const isMyPool = !showMyPoolsOnly || !address || 
         pool.marketMaker.toLowerCase() === address.toLowerCase() ||
         (pool.latestSwap && pool.latestSwap.swapper.toLowerCase() === address.toLowerCase());
@@ -79,7 +79,7 @@ const AllPoolsPage = () => {
 
   const filteredLimitswapPools = useMemo(() => {
     if (!limitswapPools) return [];
-    return limitswapPools.map(pool => {
+    return limitswapPools.slice().reverse().map(pool => {
       if (pool.latestSwap && !pool.latestSwap.taken && !pool.latestSwap.cancelled) {
         const now = Math.floor(Date.now() / 1000);
         const orderExpiry = Number(pool.latestSwap.orderExpiry);
@@ -94,7 +94,7 @@ const AllPoolsPage = () => {
         (pool.latestSwap && pool.latestSwap.swapper.toLowerCase() === address.toLowerCase());
       
       const hasOpenOrder = !showOpenOrdersOnly || 
-        (pool.latestSwap && !pool.latestSwap.taken && !pool.latestSwap.cancelled && !pool.latestSwap.expired);
+        (pool.latestSwap && !pool.latestSwap.taken && !pool.latestSwap.cancelled && !pool.latestSwap.expired && Number(pool.latestSwap.orderExpiry) > 0 );
       
       return isMyPool && hasOpenOrder;
     });
@@ -204,7 +204,7 @@ const AllPoolsPage = () => {
 
         return (
           <div style={{ maxWidth: '800px', margin: '0 auto', padding: '2rem' }}>
-            <h1 style={{ fontWeight: 'bold', marginBottom: '1rem', textAlign: 'center'}}>{APP_TITLE.BASE}</h1>
+            <h1 style={{ fontWeight: 'bold', marginBottom: '1rem', textAlign: 'center'}} onClick={() => navigate('/start')}>{APP_TITLE.BASE}</h1>
             <WalletConnectButton />
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1rem' }}>
               <div style={{ display: 'flex', gap: '1rem' }}>

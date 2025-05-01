@@ -64,8 +64,8 @@ const DeployPoolSpreadPage = () => {
       // Wait for transaction to be mined
       await publicClient.waitForTransactionReceipt({ hash });
       
-      // Navigate back to pool select page
-      navigate('/spread-order');
+      // Navigate to all-pools with myPools=true
+      navigate('/all-pools?tab=deferswap&myPools=true');
     } catch (err) {
       console.error('Pool deployment failed:', err);
     } finally {
