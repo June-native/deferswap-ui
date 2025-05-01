@@ -12,6 +12,8 @@ const AllPoolsPage = () => {
   const { pools: deferswapPools, isLoading: isLoadingDeferswap } = useDeferswapPoolInfo(50, 0);
   const { pools: limitswapPools, isLoading: isLoadingLimitswap } = useLimitswapPoolInfo(50, 0);
 
+  console.log(deferswapPools, limitswapPools);
+
   const formatAddress = (address: string) => {
     return `${address.slice(0, 6)}...${address.slice(-4)}`;
   };
