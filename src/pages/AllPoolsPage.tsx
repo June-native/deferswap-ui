@@ -12,6 +12,9 @@ const AllPoolsPage = () => {
   const { pools: deferswapPools, isLoading: isLoadingDeferswap } = useDeferswapPoolInfo(50, 0);
   const { pools: limitswapPools, isLoading: isLoadingLimitswap } = useLimitswapPoolInfo(50, 0);
 
+  const reversedDeferswapPools = deferswapPools?.slice().reverse();
+  const reversedLimitswapPools = limitswapPools?.slice().reverse();
+
   console.log(deferswapPools, limitswapPools);
 
   const formatAddress = (address: string) => {
@@ -33,12 +36,12 @@ const AllPoolsPage = () => {
 
   const getStatusColor = (status: string) => {
     switch (status) {
-      case 'Open': return 'text-green-500';
-      case 'Taken': return 'text-blue-500';
-      case 'Settled': return 'text-purple-500';
-      case 'Claimed': return 'text-yellow-500';
-      case 'Cancelled': return 'text-red-500';
-      default: return 'text-gray-500';
+      case 'Open': return '#22c55e';
+      case 'Taken': return '#3b82f6';
+      case 'Settled': return '#a855f7';
+      case 'Claimed': return '#eab308';
+      case 'Cancelled': return '#ef4444';
+      default: return '#6b7280';
     }
   };
 
@@ -122,7 +125,7 @@ const AllPoolsPage = () => {
 
       {activeTab === 'deferswap' ? (
         <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
-          {deferswapPools?.map((pool) => (
+          {reversedDeferswapPools?.map((pool) => (
             <div 
               key={pool.poolAddress} 
               style={{ 
@@ -192,7 +195,7 @@ const AllPoolsPage = () => {
                       <p>Base Amount: {formatAmount(pool.latestSwap.baseAmount, pool.baseTokenInfo?.decimals)} {pool.baseTokenInfo?.symbol}</p>
                     </div>
                     <div>
-                      <p>Status: <span className={getStatusColor(getSwapStatus(pool.latestSwap))}>
+                      <p>Status: <span style={{ color: getStatusColor(getSwapStatus(pool.latestSwap)) }}>
                         {getSwapStatus(pool.latestSwap)}
                       </span></p>
                       <p>Expiry: {formatTimestamp(pool.latestSwap.expiry)}</p>
@@ -206,7 +209,7 @@ const AllPoolsPage = () => {
         </div>
       ) : (
         <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
-          {limitswapPools?.map((pool) => (
+          {reversedLimitswapPools?.map((pool) => (
             <div 
               key={pool.poolAddress} 
               style={{ 
@@ -279,7 +282,7 @@ const AllPoolsPage = () => {
                       <p>Min Quote: {formatAmount(pool.latestSwap.minQuoteAmount, pool.quoteTokenInfo?.decimals)} {pool.quoteTokenInfo?.symbol}</p>
                     </div>
                     <div>
-                      <p>Status: <span className={getStatusColor(getSwapStatus(pool.latestSwap))}>
+                      <p>Status: <span style={{ color: getStatusColor(getSwapStatus(pool.latestSwap)) }}>
                         {getSwapStatus(pool.latestSwap)}
                       </span></p>
                       <p>Order Expiry: {formatTimestamp(pool.latestSwap.orderExpiry)}</p>
