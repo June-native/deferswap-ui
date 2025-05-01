@@ -71,53 +71,10 @@ export const useDeferswapPoolInfo = (limit: number = 10, skip: number = 0) => {
   });
 
   const pools = data as DeferswapPoolInfo[] | undefined;
-  const [tokenAddresses, setTokenAddresses] = useState<string[]>([]);
-  const [tokenInfoMap, setTokenInfoMap] = useState<Record<string, TokenInfo>>({});
-  const [isLoadingTokens, setIsLoadingTokens] = useState(false);
-
-  useEffect(() => {
-    if (pools) {
-      const addresses = new Set<string>();
-      pools.forEach(pool => {
-        addresses.add(pool.baseToken);
-        addresses.add(pool.quoteToken);
-      });
-      setTokenAddresses(Array.from(addresses));
-    }
-  }, [pools]);
-
-  // Fetch token info for each address
-  const baseTokenInfo = useTokenInfo(tokenAddresses[0] || '');
-  const quoteTokenInfo = useTokenInfo(tokenAddresses[1] || '');
-
-  useEffect(() => {
-    const newTokenInfoMap: Record<string, TokenInfo> = {};
-    let anyLoading = false;
-
-    if (tokenAddresses[0] && baseTokenInfo.tokenInfo) {
-      newTokenInfoMap[tokenAddresses[0]] = baseTokenInfo.tokenInfo;
-    }
-    if (tokenAddresses[1] && quoteTokenInfo.tokenInfo) {
-      newTokenInfoMap[tokenAddresses[1]] = quoteTokenInfo.tokenInfo;
-    }
-
-    if (baseTokenInfo.isLoading || quoteTokenInfo.isLoading) {
-      anyLoading = true;
-    }
-
-    setTokenInfoMap(newTokenInfoMap);
-    setIsLoadingTokens(anyLoading);
-  }, [baseTokenInfo, quoteTokenInfo, tokenAddresses]);
-
-  const poolsWithTokenInfo = pools?.map(pool => ({
-    ...pool,
-    baseTokenInfo: tokenInfoMap[pool.baseToken],
-    quoteTokenInfo: tokenInfoMap[pool.quoteToken],
-  }));
 
   return {
-    pools: poolsWithTokenInfo,
-    isLoading: isLoadingPools || isLoadingTokens,
+    pools,
+    isLoading: isLoadingPools,
     error,
   };
 };
@@ -132,53 +89,10 @@ export const useLimitswapPoolInfo = (limit: number = 10, skip: number = 0) => {
   });
 
   const pools = data as LimitswapPoolInfo[] | undefined;
-  const [tokenAddresses, setTokenAddresses] = useState<string[]>([]);
-  const [tokenInfoMap, setTokenInfoMap] = useState<Record<string, TokenInfo>>({});
-  const [isLoadingTokens, setIsLoadingTokens] = useState(false);
-
-  useEffect(() => {
-    if (pools) {
-      const addresses = new Set<string>();
-      pools.forEach(pool => {
-        addresses.add(pool.baseToken);
-        addresses.add(pool.quoteToken);
-      });
-      setTokenAddresses(Array.from(addresses));
-    }
-  }, [pools]);
-
-  // Fetch token info for each address
-  const baseTokenInfo = useTokenInfo(tokenAddresses[0] || '');
-  const quoteTokenInfo = useTokenInfo(tokenAddresses[1] || '');
-
-  useEffect(() => {
-    const newTokenInfoMap: Record<string, TokenInfo> = {};
-    let anyLoading = false;
-
-    if (tokenAddresses[0] && baseTokenInfo.tokenInfo) {
-      newTokenInfoMap[tokenAddresses[0]] = baseTokenInfo.tokenInfo;
-    }
-    if (tokenAddresses[1] && quoteTokenInfo.tokenInfo) {
-      newTokenInfoMap[tokenAddresses[1]] = quoteTokenInfo.tokenInfo;
-    }
-
-    if (baseTokenInfo.isLoading || quoteTokenInfo.isLoading) {
-      anyLoading = true;
-    }
-
-    setTokenInfoMap(newTokenInfoMap);
-    setIsLoadingTokens(anyLoading);
-  }, [baseTokenInfo, quoteTokenInfo, tokenAddresses]);
-
-  const poolsWithTokenInfo = pools?.map(pool => ({
-    ...pool,
-    baseTokenInfo: tokenInfoMap[pool.baseToken],
-    quoteTokenInfo: tokenInfoMap[pool.quoteToken],
-  }));
 
   return {
-    pools: poolsWithTokenInfo,
-    isLoading: isLoadingPools || isLoadingTokens,
+    pools,
+    isLoading: isLoadingPools,
     error,
   };
 }; 
