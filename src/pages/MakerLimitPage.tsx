@@ -86,7 +86,7 @@ const SwapMMPageV2 = () => {
           cursor: 'pointer',
           display: 'inline-block'
         }}
-        onClick={() => window.location.href = '/limit-order'}
+        onClick={() => window.location.href = '/all-pools?tab=limitswap&myPools=true'}
       >
         {APP_TITLE.LIMIT_ORDER} ({NETWORK.name} {baseTokenMeta.symbol}/{quoteTokenMeta.symbol})
       </h1>

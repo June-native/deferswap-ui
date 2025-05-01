@@ -109,7 +109,7 @@ const DeployPoolLimitPage = () => {
           cursor: 'pointer',
           display: 'inline-block'
         }}
-        onClick={() => window.location.href = '/limit-order'}
+        onClick={() => window.location.href = '/all-pools?tab=limitswap'}
       >
         {APP_TITLE.LIMIT_ORDER} ({NETWORK.name})
       </h1>

@@ -90,7 +90,7 @@ const MakerSpreadPage = () => {
           cursor: 'pointer',
           display: 'inline-block'
         }}
-        onClick={() => window.location.href = '/'}
+        onClick={() => window.location.href = '/all-pools?tab=deferswap&myPools=true'}
       >
         {APP_TITLE.SPREAD_ORDER} ({NETWORK.name} {baseTokenMeta.symbol}/{quoteTokenMeta.symbol})
       </h1>

@@ -88,7 +88,7 @@ const DeployPoolSpreadPage = () => {
           cursor: 'pointer',
           display: 'inline-block'
         }}
-        onClick={() => window.location.href = '/'}
+        onClick={() => window.location.href = '/all-pools?tab=deferswap'}
       >
         {APP_TITLE.SPREAD_ORDER} ({NETWORK.name})
       </h1>

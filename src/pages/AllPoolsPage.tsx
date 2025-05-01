@@ -204,7 +204,12 @@ const AllPoolsPage = () => {
 
         return (
           <div style={{ maxWidth: '800px', margin: '0 auto', padding: '2rem' }}>
-            <h1 style={{ fontWeight: 'bold', marginBottom: '1rem', textAlign: 'center'}} onClick={() => navigate('/start')}>{APP_TITLE.BASE}</h1>
+            <h1 
+              style={{ fontWeight: 'bold', marginBottom: '1rem', textAlign: 'center', cursor: 'pointer' }}
+              onClick={() => navigate('/start')}
+            >
+              {APP_TITLE.BASE}
+            </h1>
             <WalletConnectButton />
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1rem' }}>
               <div style={{ display: 'flex', gap: '1rem' }}>
