@@ -41,7 +41,7 @@ export interface LimitswapPoolInfo {
   quoteToken: string;
   marketMaker: string;
   latestSwapId: string;
-  latestSwap: {
+  latestSwap?: {
     swapper: string;
     quoteAmount: string;
     baseAmount: string;
@@ -54,6 +54,7 @@ export interface LimitswapPoolInfo {
     settled: boolean;
     claimed: boolean;
     cancelled: boolean;
+    expired?: boolean;
   };
   collateralIsBase: boolean;
   collateralRateLimit: string;
