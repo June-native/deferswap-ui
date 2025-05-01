@@ -7,6 +7,7 @@ import TakerLimitPage from './pages/TakerLimitPage';
 import MakerLimitPage from './pages/MakerLimitPage';
 import DeployPoolSpreadPage from './pages/DeployPoolSpreadPage';
 import DeployPoolLimitPage from './pages/DeployPoolLimitPage';
+import AllPoolsPage from './pages/AllPoolsPage';
 
 
 // function App() {
@@ -30,6 +31,7 @@ function App() {
         <Route path="/limit-order/take" element={<TakerLimitPage />} />
         <Route path="/limit-order/make" element={<MakerLimitPage />} />
         <Route path="/limit-order/deploy" element={<DeployPoolLimitPage />} />
+        <Route path="/all-pools" element={<AllPoolsPage />} />
       </Routes>
     </BrowserRouter>
   );

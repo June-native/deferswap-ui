@@ -18,6 +18,7 @@ export const LIMIT_ORDER_POOLS = [
 // factory configs
 export const factoryAddress = '0xa2087A11C04Bd577571278E5397083082e8E3Da2';
 export const factoryLimitOrder = '0x9fD663eA45Ec322876276ea3397e05bF3F42c6f0';
+export const poolInfoHelper = '0x24Df1fb0Cc2b92727C34933F132E1c298D93aB5A'; 
 export const SKIP_FIRST_X_POOLS = 2; // Skip the first X pools when fetching from factory
 export const SKIP_FIRST_X_LIMIT_ORDER_POOLS = 2; // Skip the first X pools when fetching from factory
 export const DEFAULT_POOL_CONFIG = {
