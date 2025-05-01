@@ -1,11 +1,12 @@
-import { useState } from 'react';
+import { useState, useMemo } from 'react';
 import { useAccount, useWriteContract } from 'wagmi';
-import { parseUnits } from 'viem';
+import { parseUnits, formatUnits } from 'viem';
 import { factoryAbi } from '../config/abi';
 import { factoryAddress, PAIRS, DEFAULT_POOL_CONFIG, NETWORK, APP_TITLE } from '../config/constants';
 import WalletConnectButton from '../components/WalletConnectButton';
 import { useNavigate } from 'react-router-dom';
 import { publicClient } from '../lib/viem';
+import { useDeferswapPoolInfo } from '../hooks/usePoolInfo';
 
 const DeployPoolSpreadPage = () => {
   const { address } = useAccount();
@@ -16,6 +17,23 @@ const DeployPoolSpreadPage = () => {
 
   // Get available pairs for current network
   const availablePairs = PAIRS[NETWORK.name.toLowerCase()] || [];
+
+  // Fetch all spread pools
+  const { pools: spreadPools } = useDeferswapPoolInfo(50, 0);
+
+  // Check if pool already exists
+  const existingPool = useMemo(() => {
+    if (!spreadPools || !address || !selectedPair) return null;
+
+    const pair = availablePairs.find(p => p.label === selectedPair);
+    if (!pair) return null;
+
+    return spreadPools.find(pool => 
+      pool.baseToken.toLowerCase() === pair.baseToken.toLowerCase() &&
+      pool.quoteToken.toLowerCase() === pair.quoteToken.toLowerCase() &&
+      pool.marketMaker.toLowerCase() === address.toLowerCase()
+    );
+  }, [spreadPools, address, selectedPair, availablePairs]);
 
   const handleDeploy = async () => {
     if (!address || !selectedPair) return;
@@ -47,11 +65,17 @@ const DeployPoolSpreadPage = () => {
       await publicClient.waitForTransactionReceipt({ hash });
       
       // Navigate back to pool select page
-      navigate('/');
+      navigate('/spread-order');
     } catch (err) {
       console.error('Pool deployment failed:', err);
     } finally {
       setSendingTx(false);
+    }
+  };
+
+  const handleUseExistingPool = () => {
+    if (existingPool) {
+      navigate(`/spread-order/make?pool=${existingPool.poolAddress}`);
     }
   };
 
@@ -68,11 +92,9 @@ const DeployPoolSpreadPage = () => {
       >
         {APP_TITLE.SPREAD_ORDER} ({NETWORK.name})
       </h1>
-    <WalletConnectButton />
-    <div className="main-container">
-      <h2 className="main-title">Deploy New Pool</h2>
-      
-        
+      <WalletConnectButton />
+      <div className="main-container">
+        <h2 className="main-title">Deploy New Pool</h2>
         
         {address && (
           <>
@@ -100,12 +122,24 @@ const DeployPoolSpreadPage = () => {
               <div><b>Penalty Rate:</b> {DEFAULT_POOL_CONFIG.penaltyRate / 100}%</div>
             </div>
 
+            {existingPool && (
+              <div style={{ margin: '1rem 0', padding: '1rem', backgroundColor: '#f0f9ff', borderRadius: '0.5rem' }}>
+                <p style={{ marginBottom: '0.5rem' }}>An existing pool was found with these parameters:</p>
+                <div className="compact-list">
+                  <div><b>Pool Address:</b> {existingPool.poolAddress}</div>
+                  <div><b>Min Quote Size:</b> {formatUnits(BigInt(existingPool.minQuoteSize), 18)}</div>
+                  <div><b>Settlement Period:</b> {Number(BigInt(existingPool.settlementPeriod)) / (60 * 60)} hours</div>
+                  <div><b>Penalty Rate:</b> {(Number(BigInt(existingPool.penaltyRate)) / 100).toFixed(2)}%</div>
+                </div>
+              </div>
+            )}
+
             <button
-              onClick={handleDeploy}
+              onClick={existingPool ? handleUseExistingPool : handleDeploy}
               disabled={!address || !selectedPair || sendingTx}
               className="button full-width-button"
             >
-              {sendingTx ? 'Deploying...' : 'Deploy Pool'}
+              {sendingTx ? 'Deploying...' : existingPool ? 'Make Quote using Existing Pool' : 'Deploy Pool'}
             </button>
           </>
         )}

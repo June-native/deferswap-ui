@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useMemo } from 'react';
 import { useAccount, useWriteContract } from 'wagmi';
 import { parseUnits } from 'viem';
 import { factoryAbiLimit as factoryAbi } from '../config/abi';
@@ -6,6 +6,7 @@ import { factoryLimitOrder, LIMIT_ORDER_PAIRS as PAIRS, NETWORK, APP_TITLE } fro
 import WalletConnectButton from '../components/WalletConnectButton';
 import { useNavigate } from 'react-router-dom';
 import { publicClient } from '../lib/viem';
+import { useLimitswapPoolInfo } from '../hooks/usePoolInfo';
 
 const DeployPoolLimitPage = () => {
   const { address } = useAccount();
@@ -20,6 +21,27 @@ const DeployPoolLimitPage = () => {
 
   // Get available pairs for current network
   const availablePairs = PAIRS[NETWORK.name.toLowerCase()] || [];
+
+  // Fetch all limit pools
+  const { pools: limitPools } = useLimitswapPoolInfo(50, 0);
+
+  // Check if pool already exists
+  const existingPool = useMemo(() => {
+    if (!limitPools || !address) return null;
+
+    const targetBaseToken = useCustomParams ? baseToken : availablePairs.find(p => p.label === selectedPair)?.baseToken;
+    const targetQuoteToken = useCustomParams ? quoteToken : availablePairs.find(p => p.label === selectedPair)?.quoteToken;
+    const targetCollateralIsBase = useCustomParams ? collateralIsBase : availablePairs.find(p => p.label === selectedPair)?.collateralIsBase;
+
+    if (!targetBaseToken || !targetQuoteToken) return null;
+
+    return limitPools.find(pool => 
+      pool.baseToken.toLowerCase() === targetBaseToken.toLowerCase() &&
+      pool.quoteToken.toLowerCase() === targetQuoteToken.toLowerCase() &&
+      pool.collateralIsBase === targetCollateralIsBase &&
+      pool.marketMaker.toLowerCase() === address.toLowerCase()
+    );
+  }, [limitPools, address, selectedPair, baseToken, quoteToken, collateralIsBase, useCustomParams, availablePairs]);
 
   const handleDeploy = async () => {
     if (!address) return;
@@ -69,6 +91,12 @@ const DeployPoolLimitPage = () => {
       console.error('Limit Order Pool deployment failed:', err);
     } finally {
       setSendingTx(false);
+    }
+  };
+
+  const handleUseExistingPool = () => {
+    if (existingPool) {
+      navigate(`/limit-order/make?pool=${existingPool.poolAddress}`);
     }
   };
 
@@ -185,12 +213,23 @@ const DeployPoolLimitPage = () => {
               </>
             )}
 
+            {existingPool && (
+              <div style={{ margin: '1rem 0', padding: '1rem', backgroundColor: '#f0f9ff', borderRadius: '0.5rem' }}>
+                <p style={{ marginBottom: '0.5rem' }}>An existing pool was found with these parameters:</p>
+                <div className="compact-list">
+                  <div><b>Pool Address:</b> {existingPool.poolAddress}</div>
+                  <div><b>Collateral In:</b> {existingPool.collateralIsBase ? 'Base Token' : 'Quote Token'}</div>
+                  <div><b>Collateral Rate Limit:</b> {(Number(existingPool.collateralRateLimit) / 100).toFixed(2)}%</div>
+                </div>
+              </div>
+            )}
+
             <button
-              onClick={handleDeploy}
+              onClick={existingPool ? handleUseExistingPool : handleDeploy}
               disabled={!address || (!useCustomParams && !selectedPair) || (useCustomParams && (!baseToken || !quoteToken)) || sendingTx}
               className="button full-width-button"
             >
-              {sendingTx ? 'Deploying...' : 'Deploy Pool'}
+              {sendingTx ? 'Deploying...' : existingPool ? 'Make Quote using Existing Pool' : 'Deploy Pool'}
             </button>
           </>
         )}
